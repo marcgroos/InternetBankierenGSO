@@ -1,7 +1,7 @@
 package bank.server.rmi;
 
 import bank.server.BalieServer;
-import bank.server.domain.Money;
+import bank.domain.Money;
 import fontyspublisher.RemotePublisher;
 
 import java.rmi.RemoteException;
@@ -13,15 +13,14 @@ import java.rmi.registry.Registry;
  */
 public class BalancePublisher extends RemotePublisher {
 
-    // Set binding name for student administration
-    private final String bindingName = "BalancePublisher";
-    private final String propertyName = "BankSaldo";
+    private final String bindingName = "balancePublisher";
 
-    // References to registry and student administration
+    private String propertyName;
     private Registry registry = null;
 
-    public BalancePublisher() throws RemoteException {
+    public BalancePublisher(int accountNr) throws RemoteException {
         super();
+        this.propertyName = accountNr + "";
 
         createRegistry();
         bindPublisher();
@@ -63,12 +62,11 @@ public class BalancePublisher extends RemotePublisher {
         }
     }
 
-    @Override
-    public void inform(String property, Object oldMoney, Object newMoney) throws RemoteException {
+    public void informBalance(Object oldMoney, Object newMoney) throws RemoteException {
 
         System.out.println("SERVER: Trying to send '" + propertyName + "'... ");
         try {
-            super.inform("koersen", oldMoney, newMoney);
+            super.inform(propertyName, oldMoney, newMoney);
             System.out.println("SERVER: '" + propertyName + "' successfully sent.");
         } catch (Exception ex) {
             System.out.println("SERVER: FAILED to send '" + propertyName + "'.");

@@ -1,4 +1,4 @@
-package bank.server.domain;
+package bank.domain;
 
 import bank.interfaces.domain.IUserAccount;
 

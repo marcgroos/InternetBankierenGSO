@@ -5,7 +5,7 @@ import bank.exceptions.NumberDoesntExistException;
 import bank.interfaces.communication.ISession;
 import bank.interfaces.domain.IBank;
 import bank.interfaces.domain.IBankAccount;
-import bank.server.domain.Money;
+import bank.domain.Money;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -14,51 +14,52 @@ public class Session extends UnicastRemoteObject implements
         ISession {
 
     private static final long serialVersionUID = 1L;
-    private long laatsteAanroep;
-    private int reknr;
+    private long lastCall;
+    private int accountNr;
     private IBank bank;
 
-    public Session(int reknr, IBank bank) throws RemoteException {
-        laatsteAanroep = System.currentTimeMillis();
-        this.reknr = reknr;
+    public Session(int accountNr, IBank bank) throws RemoteException {
+        lastCall = System.currentTimeMillis();
+        this.accountNr = accountNr;
         this.bank = bank;
     }
 
-    public boolean isGeldig() {
-        return System.currentTimeMillis() - laatsteAanroep < GELDIGHEIDSDUUR;
+    public boolean timeLimitExceeded() {
+        return System.currentTimeMillis() - lastCall >= TIME_LIMIT;
     }
 
     @Override
-    public boolean maakOver(int bestemming, Money bedrag)
+    public boolean transferMoney(int bestemming, Money bedrag)
             throws NumberDoesntExistException, InvalidSessionException,
             RemoteException {
 
-        updateLaatsteAanroep();
+        updateLastCall();
 
-        if (reknr == bestemming)
+        if (accountNr == bestemming)
             throw new RuntimeException(
                     "source and destination must be different");
         if (!bedrag.isPositive())
             throw new RuntimeException("amount must be positive");
 
-        return bank.transferMoney(reknr, bestemming, bedrag);
+        return bank.transferMoney(accountNr, bestemming, bedrag);
     }
 
-    private void updateLaatsteAanroep() throws InvalidSessionException {
-        if (!isGeldig()) {
+    private void updateLastCall() throws InvalidSessionException {
+        if (timeLimitExceeded()) {
+//            bank.getBankAccount(accountNr).
             throw new InvalidSessionException("session has been expired");
         }
 
-        laatsteAanroep = System.currentTimeMillis();
+        lastCall = System.currentTimeMillis();
     }
 
     @Override
     public IBankAccount getRekening() throws InvalidSessionException,
             RemoteException {
 
-        updateLaatsteAanroep();
+        updateLastCall();
 
-        return bank.getBankAccount(reknr);
+        return bank.getBankAccount(accountNr);
     }
 
     @Override

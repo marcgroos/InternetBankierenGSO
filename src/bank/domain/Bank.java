@@ -1,4 +1,4 @@
-package bank.server.domain;
+package bank.domain;
 
 
 import bank.exceptions.NumberDoesntExistException;
@@ -55,7 +55,7 @@ public class Bank implements IBank {
         return accounts.get(nr);
     }
 
-    public boolean transferMoney(int source, int destination, Money money)
+    public synchronized boolean transferMoney(int source, int destination, Money money)
             throws NumberDoesntExistException {
         if (source == destination)
             throw new RuntimeException(

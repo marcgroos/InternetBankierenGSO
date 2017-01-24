@@ -3,15 +3,11 @@ package test;
 import bank.interfaces.communication.ISession;
 import bank.interfaces.domain.IBank;
 import bank.server.balie.Session;
-import bank.server.domain.Bank;
-import bank.server.domain.Money;
+import bank.domain.Bank;
+import bank.domain.Money;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.rmi.RemoteException;
-
-import static org.junit.Assert.*;
 
 /**
  *@author guill  
@@ -44,7 +40,7 @@ public class SessionTest {
 
         // Check if sessie has the right owner an is valid
         Assert.assertEquals("Hans", sessie.getRekening().getOwner().getName());
-        Assert.assertTrue(sessie.isGeldig());
+        Assert.assertTrue(sessie.timeLimitExceeded());
     }
 
     /**
@@ -61,11 +57,11 @@ public class SessionTest {
         Money negatief = new Money(-100, Money.EURO);
 
         // Try to transfer -1 euro to account 2
-        Assert.assertTrue(sessie.maakOver(rekNr2, positief));
+        Assert.assertTrue(sessie.transferMoney(rekNr2, positief));
 
         // Try to transfer 10 euros to account 2
         try {
-            sessie.maakOver(rekNr2, negatief);
+            sessie.transferMoney(rekNr2, negatief);
             Assert.fail();
         } catch (RuntimeException ex) {
             System.out.println("Cant transfer negative money");
@@ -73,7 +69,7 @@ public class SessionTest {
 
         // Try to send money to yourself
         try {
-            sessie.maakOver(rekNr1, positief);
+            sessie.transferMoney(rekNr1, positief);
             Assert.fail();
         } catch (RuntimeException ex) {
             System.out.println("Cant transfer money to yourself");

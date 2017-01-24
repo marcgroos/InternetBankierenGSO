@@ -1,6 +1,6 @@
 package bank.interfaces.domain;
 
-import bank.server.domain.Money;
+import bank.domain.Money;
 
 /**
  * Created by Marc on 24-1-2017.

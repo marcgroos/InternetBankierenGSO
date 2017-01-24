@@ -3,22 +3,22 @@ package bank.interfaces.communication;
 import bank.exceptions.InvalidSessionException;
 import bank.exceptions.NumberDoesntExistException;
 import bank.interfaces.domain.IBankAccount;
-import bank.server.domain.Money;
+import bank.domain.Money;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface ISession extends Remote {
 
-    long GELDIGHEIDSDUUR = 600000;
+    long TIME_LIMIT = 600000;
 
     /**
      * @returns true als de laatste aanroep van getBankAccount of transferMoney voor deze
-     * sessie minder dan GELDIGHEIDSDUUR geleden is
+     * sessie minder dan TIME_LIMIT geleden is
      * en er geen communicatiestoornis in de tussentijd is opgetreden,
      * anders false
      */
-    boolean isGeldig() throws RemoteException;
+    boolean timeLimitExceeded() throws RemoteException;
 
     /**
      * er wordt bedrag overgemaakt van de bankrekening met het nummer bron naar
@@ -31,7 +31,7 @@ public interface ISession extends Remote {
      * @throws NumberDoesntExistException als bestemming onbekend is
      * @throws InvalidSessionException    als sessie niet meer geldig is
      */
-    boolean maakOver(int bestemming, Money bedrag)
+    boolean transferMoney(int bestemming, Money bedrag)
             throws NumberDoesntExistException, InvalidSessionException,
             RemoteException;
 

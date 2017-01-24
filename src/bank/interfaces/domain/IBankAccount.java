@@ -1,7 +1,7 @@
 package bank.interfaces.domain;
 
 
-import bank.server.domain.Money;
+import bank.domain.Money;
 
 import java.io.Serializable;
 

@@ -1,7 +1,7 @@
 package bank.interfaces.domain;
 
 import bank.exceptions.NumberDoesntExistException;
-import bank.server.domain.Money;
+import bank.domain.Money;
 
 /**
  * @author 871059

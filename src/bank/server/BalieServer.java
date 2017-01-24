@@ -8,7 +8,7 @@ package bank.server;
 import bank.client.BankingClient;
 import bank.interfaces.communication.IBankProvider;
 import bank.server.balie.BankProvider;
-import bank.server.domain.Bank;
+import bank.domain.Bank;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  */
 public class BalieServer extends Application {
 
-    public static final int RMI_PORT = 1099;
+    public static final int RMI_PORT = 1069;
 
     private final double MINIMUM_WINDOW_WIDTH = 600.0;
     private final double MINIMUM_WINDOW_HEIGHT = 200.0;

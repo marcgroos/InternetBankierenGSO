@@ -2,7 +2,7 @@ package test;
 
 import bank.interfaces.communication.ISession;
 import bank.server.balie.BankProvider;
-import bank.server.domain.Bank;
+import bank.domain.Bank;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,7 +74,7 @@ public class BankProviderTest {
         Assert.assertNotNull(sessie);
 
         // Check if seesie is valid
-        Assert.assertTrue(sessie.isGeldig());
+        Assert.assertTrue(sessie.timeLimitExceeded());
         Assert.assertEquals("Arie", sessie.getRekening().getOwner().getName());
     }
 

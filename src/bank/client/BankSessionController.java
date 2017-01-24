@@ -5,12 +5,13 @@
  */
 package bank.client;
 
+import bank.client.rmi.BalanceListener;
 import bank.exceptions.InvalidSessionException;
 import bank.exceptions.NumberDoesntExistException;
 import bank.interfaces.communication.IBankProvider;
 import bank.interfaces.communication.ISession;
 import bank.interfaces.domain.IBankAccount;
-import bank.server.domain.Money;
+import bank.domain.Money;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -51,6 +52,7 @@ public class BankSessionController implements Initializable {
 
     private TextArea taMessage;
 
+    private BalanceListener balanceListener;
     private BankingClient application;
     private IBankProvider balie;
     private ISession sessie;
@@ -59,7 +61,15 @@ public class BankSessionController implements Initializable {
         this.balie = balie;
         this.sessie = sessie;
         this.application = application;
+
+        try {
+            this.balanceListener = new BalanceListener(this, tfAccountNr.getText());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
         IBankAccount rekening = null;
+
         try {
             rekening = sessie.getRekening();
             tfAccountNr.setText(rekening.getNr() + "");
@@ -103,7 +113,7 @@ public class BankSessionController implements Initializable {
                 taMessage.setText("can't transferMoney money to your own account");
             }
             long centen = (long) (Double.parseDouble(tfAmount.getText()) * 100);
-            sessie.maakOver(to, new Money(centen, Money.EURO));
+            sessie.transferMoney(to, new Money(centen, Money.EURO));
         } catch (RemoteException e1) {
             e1.printStackTrace();
             taMessage.setText("verbinding verbroken");
@@ -111,5 +121,9 @@ public class BankSessionController implements Initializable {
             e1.printStackTrace();
             taMessage.setText(e1.getMessage());
         }
+    }
+
+    public void changeBalanceValue(String newValue) {
+        this.tfBalance.setText(newValue);
     }
 }

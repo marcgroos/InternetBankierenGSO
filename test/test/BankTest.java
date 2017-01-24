@@ -2,13 +2,11 @@ package test;
 
 import bank.exceptions.NumberDoesntExistException;
 import bank.interfaces.domain.IBank;
-import bank.server.domain.Bank;
-import bank.server.domain.Money;
+import bank.domain.Bank;
+import bank.domain.Money;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  * @author guill
