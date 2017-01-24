@@ -1,6 +1,11 @@
-package bank.bankieren;
+package bank.server.domain;
 
-class Rekening implements IRekeningTbvBank {
+
+import bank.interfaces.domain.IKlant;
+import bank.interfaces.domain.IRekening;
+import bank.interfaces.domain.IRekeningBank;
+
+class Rekening implements IRekeningBank {
 
     private static final long serialVersionUID = 7221569686169173632L;
     private static final int KREDIETLIMIET = -10000;
@@ -12,10 +17,11 @@ class Rekening implements IRekeningTbvBank {
      * creatie van een bankrekening met saldo van 0.0<br>
      * de constructor heeft package-access omdat de PersistentAccount-objecten door een
      * het PersistentBank-object worden beheerd
-     * @see banking.persistence.PersistentBank
-     * @param number het bankrekeningnummer
-     * @param klant de eigenaar van deze rekening
+     *
+     * @param number   het bankrekeningnummer
+     * @param klant    de eigenaar van deze rekening
      * @param currency de munteenheid waarin het saldo is uitgedrukt
+     * @see banking.persistence.PersistentBank
      */
     Rekening(int number, IKlant klant, String currency) {
         this(number, klant, new Money(0, currency));
@@ -25,11 +31,12 @@ class Rekening implements IRekeningTbvBank {
      * creatie van een bankrekening met saldo saldo<br>
      * de constructor heeft package-access omdat de PersistentAccount-objecten door een
      * het PersistentBank-object worden beheerd
-     * @see banking.persistence.PersistentBank
-     * @param number het bankrekeningnummer
-     * @param name de naam van de eigenaar
-     * @param city de woonplaats van de eigenaar
+     *
+     * @param number   het bankrekeningnummer
+     * @param name     de naam van de eigenaar
+     * @param city     de woonplaats van de eigenaar
      * @param currency de munteenheid waarin het saldo is uitgedrukt
+     * @see banking.persistence.PersistentBank
      */
     Rekening(int number, IKlant klant, Money saldo) {
         this.nr = number;

@@ -5,19 +5,11 @@
  */
 package bank.server;
 
-import bank.bankieren.Bank;
-import bank.gui.BankierClient;
-import bank.internettoegang.Balie;
-import bank.internettoegang.IBalie;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.rmi.Naming;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import bank.client.BankierClient;
+import bank.interfaces.communication.IBalie;
+import bank.server.balie.Balie;
+import bank.server.domain.Bank;
 import javafx.application.Application;
-import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.fxml.JavaFXBuilderFactory;
@@ -25,16 +17,30 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.rmi.Naming;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
  * @author frankcoenen
  */
 public class BalieServer extends Application {
 
-    private Stage stage;
     private final double MINIMUM_WINDOW_WIDTH = 600.0;
     private final double MINIMUM_WINDOW_HEIGHT = 200.0;
+    private Stage stage;
     private String nameBank;
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        launch(args);
+    }
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -53,34 +59,34 @@ public class BalieServer extends Application {
     }
 
     public boolean startBalie(String nameBank) {
-            
-            FileOutputStream out = null;
-            try {
-                this.nameBank = nameBank;
-                String address = java.net.InetAddress.getLocalHost().getHostAddress();
-                int port = 1099;
-                Properties props = new Properties();
-                String rmiBalie = address + ":" + port + "/" + nameBank;
-                props.setProperty("balie", rmiBalie);
-                out = new FileOutputStream(nameBank + ".props");
-                props.store(out, null);
-                out.close();
-                java.rmi.registry.LocateRegistry.createRegistry(port);
-                IBalie balie = new Balie(new Bank(nameBank));
-                Naming.rebind(nameBank, balie);
-               
-                return true;
 
+        FileOutputStream out = null;
+        try {
+            this.nameBank = nameBank;
+            String address = java.net.InetAddress.getLocalHost().getHostAddress();
+            int port = 1099;
+            Properties props = new Properties();
+            String rmiBalie = address + ":" + port + "/" + nameBank;
+            props.setProperty("balie", rmiBalie);
+            out = new FileOutputStream(nameBank + ".props");
+            props.store(out, null);
+            out.close();
+            java.rmi.registry.LocateRegistry.createRegistry(port);
+            IBalie balie = new Balie(new Bank(nameBank));
+            Naming.rebind(nameBank, balie);
+
+            return true;
+
+        } catch (IOException ex) {
+            Logger.getLogger(BalieServer.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                out.close();
             } catch (IOException ex) {
                 Logger.getLogger(BalieServer.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                try {
-                    out.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(BalieServer.class.getName()).log(Level.SEVERE, null, ex);
-                }
             }
-            return false;
+        }
+        return false;
     }
 
     public void gotoBankSelect() {
@@ -107,12 +113,5 @@ public class BalieServer extends Application {
         stage.setScene(scene);
         stage.sizeToScene();
         return (Initializable) loader.getController();
-    }
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        launch(args);
     }
 }

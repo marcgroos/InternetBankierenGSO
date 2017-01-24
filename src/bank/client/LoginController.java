@@ -3,21 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bank.gui;
+package bank.client;
 
-import bank.bankieren.IRekening;
-import bank.internettoegang.IBalie;
-import bank.internettoegang.IBankiersessie;
+import bank.interfaces.communication.IBalie;
+import bank.interfaces.communication.IBankierSessie;
+import bank.interfaces.domain.IRekening;
 import fontys.util.InvalidSessionException;
-import java.net.URL;
-import java.rmi.RemoteException;
-import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+
+import java.net.URL;
+import java.rmi.RemoteException;
+import java.util.ResourceBundle;
 
 /**
  * FXML Controller class
@@ -38,7 +39,7 @@ public class LoginController implements Initializable {
     private TextArea taMessages;
 
     private IBalie balie;
-    private IBankiersessie sessie;
+    private IBankierSessie sessie;
     private BankierClient application;
 
     public void setApp(BankierClient application, IBalie balie, String AccountName) {

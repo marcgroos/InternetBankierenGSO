@@ -1,16 +1,13 @@
-
-
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
 
-package bank.gui;
+package bank.client;
 
-import bank.internettoegang.IBalie;
-import bank.internettoegang.IBankiersessie;
+import bank.interfaces.communication.IBalie;
+import bank.interfaces.communication.IBankierSessie;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -32,10 +29,17 @@ import java.util.logging.Logger;
  */
 public class BankierClient extends Application {
 
-    private Stage stage;
     private final double MINIMUM_WINDOW_WIDTH = 390.0;
     private final double MINIMUM_WINDOW_HEIGHT = 500.0;
+    private Stage stage;
     //
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        launch(args);
+    }
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -53,7 +57,6 @@ public class BankierClient extends Application {
         }
     }
 
-
     protected IBalie connectToBalie(String bankName) {
         try {
             FileInputStream in = new FileInputStream(bankName + ".props");
@@ -62,7 +65,7 @@ public class BankierClient extends Application {
             String rmiBalie = props.getProperty("balie");
             in.close();
 
-            IBalie balie = (IBalie) Naming.lookup("rmi://" + rmiBalie);
+            IBalie balie = (IBalie) Naming.lookup("fontys.rmi://" + rmiBalie);
             return balie;
 
         } catch (Exception exc) {
@@ -70,7 +73,6 @@ public class BankierClient extends Application {
             return null;
         }
     }
-
 
     protected void gotoBankSelect() {
         try {
@@ -81,7 +83,6 @@ public class BankierClient extends Application {
         }
     }
 
-
     protected void gotoLogin(IBalie balie, String accountNaam) {
         try {
             LoginController login = (LoginController) replaceSceneContent("Login.fxml");
@@ -90,7 +91,6 @@ public class BankierClient extends Application {
             Logger.getLogger(BankierClient.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
 
     protected void gotoOpenRekening(IBalie balie) {
         try {
@@ -101,7 +101,7 @@ public class BankierClient extends Application {
         }
     }
 
-    protected void gotoBankierSessie(IBalie balie, IBankiersessie sessie) {
+    protected void gotoBankierSessie(IBalie balie, IBankierSessie sessie) {
         try {
             BankierSessieController sessionController = (BankierSessieController) replaceSceneContent("BankierSessie.fxml");
             sessionController.setApp(this, balie, sessie);
@@ -109,7 +109,6 @@ public class BankierClient extends Application {
             Logger.getLogger(BankierClient.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
 
     private Initializable replaceSceneContent(String fxml) throws Exception {
         FXMLLoader loader = new FXMLLoader();
@@ -123,18 +122,10 @@ public class BankierClient extends Application {
             in.close();
         }
         Scene scene = new Scene(page, 800, 600);
-        // scene.getStylesheets().add("bank/gui/ING.css");
+        // scene.getStylesheets().add("bank/client/ING.css");
         stage.setScene(scene);
         stage.sizeToScene();
         return (Initializable) loader.getController();
-    }
-
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        launch(args);
     }
 
 }
