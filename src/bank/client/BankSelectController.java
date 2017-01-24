@@ -5,7 +5,7 @@
  */
 package bank.client;
 
-import bank.interfaces.communication.IBalie;
+import bank.interfaces.communication.IBankProvider;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -29,9 +29,9 @@ public class BankSelectController implements Initializable {
     @FXML
     private ComboBox<String> cbSelectBank;
 
-    private BankierClient application;
+    private BankingClient application;
 
-    public void setApp(BankierClient application) {
+    public void setApp(BankingClient application) {
         this.application = application;
     }
 
@@ -46,7 +46,7 @@ public class BankSelectController implements Initializable {
                                                      @Override
                                                      public void changed(ObservableValue ov, Object t, Object t1) {
                                                          bankNaam = (String) ov.getValue();
-                                                         IBalie balie = application.connectToBalie(bankNaam);
+                                                         IBankProvider balie = application.connectToBalie(bankNaam);
                                                          application.gotoLogin(balie, "");
                                                      }
                                                  }

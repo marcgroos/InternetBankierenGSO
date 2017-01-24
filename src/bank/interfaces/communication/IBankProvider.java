@@ -4,7 +4,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 
-public interface IBalie extends Remote {
+public interface IBankProvider extends Remote {
     /**
      * creatie van een nieuwe bankrekening; het gegenereerde bankrekeningnummer is
      * identificerend voor de nieuwe bankrekening en heeft een saldo van 0 euro
@@ -18,7 +18,7 @@ public interface IBalie extends Remote {
      * accountnaam(8 karakters lang) waarmee er toegang tot de nieuwe bankrekening
      * kan worden verkregen
      */
-    String openRekening(String naam, String plaats, String wachtwoord) throws RemoteException;
+    String openBankAccount(String naam, String plaats, String wachtwoord) throws RemoteException;
 
     /**
      * er wordt een sessie opgestart voor het login-account met de naam
@@ -30,7 +30,7 @@ public interface IBalie extends Remote {
      * toegang krijgt tot de bankrekening die hoort bij het betreffende login-
      * account mits accountnaam en wachtwoord matchen, anders null
      */
-    IBankierSessie logIn(String accountnaam, String wachtwoord) throws RemoteException;
+    ISession logIn(String accountnaam, String wachtwoord) throws RemoteException;
 
 }
 

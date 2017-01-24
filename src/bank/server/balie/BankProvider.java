@@ -1,7 +1,7 @@
 package bank.server.balie;
 
-import bank.interfaces.communication.IBalie;
-import bank.interfaces.communication.IBankierSessie;
+import bank.interfaces.communication.IBankProvider;
+import bank.interfaces.communication.ISession;
 import bank.interfaces.communication.ILoginAccount;
 import bank.interfaces.domain.IBank;
 
@@ -10,23 +10,23 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Random;
 
-public class Balie extends UnicastRemoteObject implements IBalie {
+public class BankProvider extends UnicastRemoteObject implements IBankProvider {
 
     private static final long serialVersionUID = -4194975069137290780L;
     private static final String CHARS = "abcdefghijklmnopqrstuvwxyz0123456789";
     private IBank bank;
     private HashMap<String, ILoginAccount> loginaccounts;
-    //private Collection<IBankierSessie> sessions;
+    //private Collection<ISession> sessions;
     private Random random;
 
-    public Balie(IBank bank) throws RemoteException {
+    public BankProvider(IBank bank) throws RemoteException {
         this.bank = bank;
         loginaccounts = new HashMap<String, ILoginAccount>();
-        //sessions = new HashSet<IBankierSessie>();
+        //sessions = new HashSet<ISession>();
         random = new Random();
     }
 
-    public String openRekening(String naam, String plaats, String wachtwoord) {
+    public String openBankAccount(String naam, String plaats, String wachtwoord) {
         if (naam.equals(""))
             return null;
         if (plaats.equals(""))
@@ -35,7 +35,7 @@ public class Balie extends UnicastRemoteObject implements IBalie {
         if (wachtwoord.length() < 4 || wachtwoord.length() > 8)
             return null;
 
-        int nr = bank.openRekening(naam, plaats);
+        int nr = bank.openBankAccount(naam, plaats);
         if (nr == -1)
             return null;
 
@@ -48,13 +48,13 @@ public class Balie extends UnicastRemoteObject implements IBalie {
         return accountname;
     }
 
-    public IBankierSessie logIn(String accountnaam, String wachtwoord)
+    public ISession logIn(String accountnaam, String wachtwoord)
             throws RemoteException {
         ILoginAccount loginaccount = loginaccounts.get(accountnaam);
         if (loginaccount == null)
             return null;
         if (loginaccount.checkWachtwoord(wachtwoord)) {
-            IBankierSessie sessie = new BankierSessie(loginaccount
+            ISession sessie = new Session(loginaccount
                     .getReknr(), bank);
 
             return sessie;

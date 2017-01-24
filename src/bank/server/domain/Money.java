@@ -10,10 +10,10 @@ public class Money implements Serializable, Comparable<Money> {
     public static final String EURO = "\u20AC";
     private static final long serialVersionUID = 1L;
 
-/*	private Money() {
-        currency="undefined";
-	}
-*/
+    /*	private Money() {
+            currency="undefined";
+        }
+    */
     private String currency;
     private long cents;
 
@@ -99,8 +99,7 @@ public class Money implements Serializable, Comparable<Money> {
         return this.currency.equals(m.currency) && this.cents == m.cents;
     }
 
-    public int compareTo(Money o) {
-        Money m = (Money) o;
+    public int compareTo(Money m) {
         if (!this.currency.equals(m.currency))
             throw new RuntimeException("comparing amounts with different currency is not implemented");
         if (this.cents == m.cents) return 0;

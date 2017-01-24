@@ -5,9 +5,9 @@
  */
 package bank.server;
 
-import bank.client.BankierClient;
-import bank.interfaces.communication.IBalie;
-import bank.server.balie.Balie;
+import bank.client.BankingClient;
+import bank.interfaces.communication.IBankProvider;
+import bank.server.balie.BankProvider;
 import bank.server.domain.Bank;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -29,6 +29,8 @@ import java.util.logging.Logger;
  * @author frankcoenen
  */
 public class BalieServer extends Application {
+
+    public static final int RMI_PORT = 1099;
 
     private final double MINIMUM_WINDOW_WIDTH = 600.0;
     private final double MINIMUM_WINDOW_HEIGHT = 200.0;
@@ -72,7 +74,7 @@ public class BalieServer extends Application {
             props.store(out, null);
             out.close();
             java.rmi.registry.LocateRegistry.createRegistry(port);
-            IBalie balie = new Balie(new Bank(nameBank));
+            IBankProvider balie = new BankProvider(new Bank(nameBank));
             Naming.rebind(nameBank, balie);
 
             return true;
@@ -91,10 +93,10 @@ public class BalieServer extends Application {
 
     public void gotoBankSelect() {
         try {
-            BalieController bankSelect = (BalieController) replaceSceneContent("balie/fxml/Balie.fxml");
+            BalieController bankSelect = (BalieController) replaceSceneContent("balie/fxml/BankProvider.fxml");
             bankSelect.setApp(this);
         } catch (Exception ex) {
-            Logger.getLogger(BankierClient.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BankingClient.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

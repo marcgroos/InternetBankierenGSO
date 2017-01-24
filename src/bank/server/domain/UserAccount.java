@@ -1,8 +1,8 @@
 package bank.server.domain;
 
-import bank.interfaces.domain.IKlant;
+import bank.interfaces.domain.IUserAccount;
 
-class Klant implements IKlant {
+class UserAccount implements IUserAccount {
 
     /**
      *
@@ -13,7 +13,7 @@ class Klant implements IKlant {
 
     private String plaats;
 
-    public Klant(String naam, String plaats) {
+    public UserAccount(String naam, String plaats) {
         this.naam = naam;
         this.plaats = plaats;
     }
@@ -26,14 +26,14 @@ class Klant implements IKlant {
         return plaats;
     }
 
-    public int compareTo(IKlant arg0) {
-        IKlant klant = (IKlant) arg0;
+    public int compareTo(IUserAccount arg0) {
+        IUserAccount klant = (IUserAccount) arg0;
         int comp = naam.compareTo(klant.getNaam());
         if (comp != 0) return comp;
         return plaats.compareTo(klant.getPlaats());
     }
 
-    public boolean equals(IKlant o) {
+    public boolean equals(IUserAccount o) {
         return this.compareTo(o) == 0;
     }
 

@@ -5,13 +5,12 @@
  */
 package bank.client;
 
-import bank.interfaces.communication.IBalie;
+import bank.interfaces.communication.IBankProvider;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -35,10 +34,10 @@ public class OpenRekeningController implements Initializable {
     @FXML
     private Button btRegister;
 
-    private IBalie balie;
-    private BankierClient application;
+    private IBankProvider balie;
+    private BankingClient application;
 
-    public void setApp(BankierClient application, IBalie balie) {
+    public void setApp(BankingClient application, IBankProvider balie) {
         this.application = application;
         this.balie = balie;
     }
@@ -60,7 +59,7 @@ public class OpenRekeningController implements Initializable {
         try {
             System.out.println("registering...");
             String accountNaam;
-            accountNaam = balie.openRekening(tfName.getText(), tfCity.getText(), tfPassWord.getText());
+            accountNaam = balie.openBankAccount(tfName.getText(), tfCity.getText(), tfPassWord.getText());
             if (accountNaam == null) {
                 return;
             }

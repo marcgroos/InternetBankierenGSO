@@ -5,12 +5,12 @@
  */
 package bank.client;
 
-import bank.interfaces.communication.IBalie;
-import bank.interfaces.communication.IBankierSessie;
-import bank.interfaces.domain.IRekening;
-import bank.server.domain.Money;
 import bank.exceptions.InvalidSessionException;
 import bank.exceptions.NumberDoesntExistException;
+import bank.interfaces.communication.IBankProvider;
+import bank.interfaces.communication.ISession;
+import bank.interfaces.domain.IBankAccount;
+import bank.server.domain.Money;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  *
  * @author frankcoenen
  */
-public class BankierSessieController implements Initializable {
+public class BankSessionController implements Initializable {
 
     @FXML
     private Hyperlink hlLogout;
@@ -51,29 +51,29 @@ public class BankierSessieController implements Initializable {
 
     private TextArea taMessage;
 
-    private BankierClient application;
-    private IBalie balie;
-    private IBankierSessie sessie;
+    private BankingClient application;
+    private IBankProvider balie;
+    private ISession sessie;
 
-    public void setApp(BankierClient application, IBalie balie, IBankierSessie sessie) {
+    public void setApp(BankingClient application, IBankProvider balie, ISession sessie) {
         this.balie = balie;
         this.sessie = sessie;
         this.application = application;
-        IRekening rekening = null;
+        IBankAccount rekening = null;
         try {
             rekening = sessie.getRekening();
             tfAccountNr.setText(rekening.getNr() + "");
-            tfBalance.setText(rekening.getSaldo() + "");
-            String eigenaar = rekening.getEigenaar().getNaam() + " te "
-                    + rekening.getEigenaar().getPlaats();
+            tfBalance.setText(rekening.getBalance() + "");
+            String eigenaar = rekening.getOwner().getNaam() + " te "
+                    + rekening.getOwner().getPlaats();
             tfNameCity.setText(eigenaar);
         } catch (InvalidSessionException ex) {
             taMessage.setText("bankiersessie is verlopen");
-            Logger.getLogger(BankierSessieController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BankSessionController.class.getName()).log(Level.SEVERE, null, ex);
 
         } catch (RemoteException ex) {
             taMessage.setText("verbinding verbroken");
-            Logger.getLogger(BankierSessieController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BankSessionController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -100,7 +100,7 @@ public class BankierSessieController implements Initializable {
             int from = Integer.parseInt(tfAccountNr.getText());
             int to = Integer.parseInt(tfToAccountNr.getText());
             if (from == to) {
-                taMessage.setText("can't transfer money to your own account");
+                taMessage.setText("can't transferMoney money to your own account");
             }
             long centen = (long) (Double.parseDouble(tfAmount.getText()) * 100);
             sessie.maakOver(to, new Money(centen, Money.EURO));

@@ -1,28 +1,27 @@
 package bank.server.balie;
 
-import bank.interfaces.communication.IBankierSessie;
-import bank.interfaces.domain.IBank;
-import bank.interfaces.domain.IRekening;
-import bank.server.domain.Money;
 import bank.exceptions.InvalidSessionException;
 import bank.exceptions.NumberDoesntExistException;
+import bank.interfaces.communication.ISession;
+import bank.interfaces.domain.IBank;
+import bank.interfaces.domain.IBankAccount;
+import bank.server.domain.Money;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public class BankierSessie extends UnicastRemoteObject implements
-        IBankierSessie {
+public class Session extends UnicastRemoteObject implements
+        ISession {
 
     private static final long serialVersionUID = 1L;
     private long laatsteAanroep;
     private int reknr;
     private IBank bank;
 
-    public BankierSessie(int reknr, IBank bank) throws RemoteException {
+    public Session(int reknr, IBank bank) throws RemoteException {
         laatsteAanroep = System.currentTimeMillis();
         this.reknr = reknr;
         this.bank = bank;
-
     }
 
     public boolean isGeldig() {
@@ -42,7 +41,7 @@ public class BankierSessie extends UnicastRemoteObject implements
         if (!bedrag.isPositive())
             throw new RuntimeException("amount must be positive");
 
-        return bank.maakOver(reknr, bestemming, bedrag);
+        return bank.transferMoney(reknr, bestemming, bedrag);
     }
 
     private void updateLaatsteAanroep() throws InvalidSessionException {
@@ -54,12 +53,12 @@ public class BankierSessie extends UnicastRemoteObject implements
     }
 
     @Override
-    public IRekening getRekening() throws InvalidSessionException,
+    public IBankAccount getRekening() throws InvalidSessionException,
             RemoteException {
 
         updateLaatsteAanroep();
 
-        return bank.getRekening(reknr);
+        return bank.getBankAccount(reknr);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package bank.interfaces.domain;
 
-import bank.server.domain.Money;
 import bank.exceptions.NumberDoesntExistException;
+import bank.server.domain.Money;
 
 /**
  * @author 871059
@@ -18,7 +18,7 @@ public interface IBank {
      * @return -1 zodra naam of plaats een lege string en anders het nummer van de
      * gecreeerde bankrekening
      */
-    int openRekening(String naam, String plaats);
+    int openBankAccount(String naam, String plaats);
 
     /**
      * er wordt bedrag overgemaakt van de bankrekening met nummer bron naar de
@@ -32,14 +32,14 @@ public interface IBank {
      * @return <b>true</b> als de overmaking is gelukt, anders <b>false</b>
      * @throws NumberDoesntExistException als een van de twee bankrekeningnummers onbekend is
      */
-    boolean maakOver(int bron, int bestemming, Money bedrag)
+    boolean transferMoney(int bron, int bestemming, Money bedrag)
             throws NumberDoesntExistException;
 
     /**
      * @param nr
      * @return de bankrekening met nummer nr mits bij deze bank bekend, anders null
      */
-    IRekening getRekening(int nr);
+    IBankAccount getBankAccount(int nr);
 
     /**
      * @return de naam van deze bank

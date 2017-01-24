@@ -6,8 +6,8 @@
 
 package bank.client;
 
-import bank.interfaces.communication.IBalie;
-import bank.interfaces.communication.IBankierSessie;
+import bank.interfaces.communication.IBankProvider;
+import bank.interfaces.communication.ISession;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 /**
  * @author frankcoenen
  */
-public class BankierClient extends Application {
+public class BankingClient extends Application {
 
     private final double MINIMUM_WINDOW_WIDTH = 390.0;
     private final double MINIMUM_WINDOW_HEIGHT = 500.0;
@@ -57,7 +57,7 @@ public class BankierClient extends Application {
         }
     }
 
-    protected IBalie connectToBalie(String bankName) {
+    protected IBankProvider connectToBalie(String bankName) {
         try {
             FileInputStream in = new FileInputStream(bankName + ".props");
             Properties props = new Properties();
@@ -65,7 +65,7 @@ public class BankierClient extends Application {
             String rmiBalie = props.getProperty("balie");
             in.close();
 
-            IBalie balie = (IBalie) Naming.lookup("rmi://" + rmiBalie);
+            IBankProvider balie = (IBankProvider) Naming.lookup("rmi://" + rmiBalie);
             return balie;
 
         } catch (Exception exc) {
@@ -79,42 +79,42 @@ public class BankierClient extends Application {
             BankSelectController bankSelect = (BankSelectController) replaceSceneContent("fxml/BankSelect.fxml");
             bankSelect.setApp(this);
         } catch (Exception ex) {
-            Logger.getLogger(BankierClient.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BankingClient.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    protected void gotoLogin(IBalie balie, String accountNaam) {
+    protected void gotoLogin(IBankProvider balie, String accountNaam) {
         try {
             LoginController login = (LoginController) replaceSceneContent("fxml/Login.fxml");
             login.setApp(this, balie, accountNaam);
         } catch (Exception ex) {
-            Logger.getLogger(BankierClient.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BankingClient.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    protected void gotoOpenRekening(IBalie balie) {
+    protected void gotoOpenRekening(IBankProvider balie) {
         try {
             OpenRekeningController openRekeningController = (OpenRekeningController) replaceSceneContent("fxml/OpenRekening.fxml");
             openRekeningController.setApp(this, balie);
         } catch (Exception ex) {
-            Logger.getLogger(BankierClient.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BankingClient.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    protected void gotoBankierSessie(IBalie balie, IBankierSessie sessie) {
+    protected void gotoBankierSessie(IBankProvider balie, ISession sessie) {
         try {
-            BankierSessieController sessionController = (BankierSessieController) replaceSceneContent("fxml/BankierSessie.fxml");
+            BankSessionController sessionController = (BankSessionController) replaceSceneContent("fxml/Session.fxml");
             sessionController.setApp(this, balie, sessie);
         } catch (Exception ex) {
-            Logger.getLogger(BankierClient.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BankingClient.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     private Initializable replaceSceneContent(String fxml) throws Exception {
         FXMLLoader loader = new FXMLLoader();
-        InputStream in = BankierClient.class.getResourceAsStream(fxml);
+        InputStream in = BankingClient.class.getResourceAsStream(fxml);
         loader.setBuilderFactory(new JavaFXBuilderFactory());
-        loader.setLocation(BankierClient.class.getResource(fxml));
+        loader.setLocation(BankingClient.class.getResource(fxml));
         AnchorPane page;
         try {
             page = (AnchorPane) loader.load(in);

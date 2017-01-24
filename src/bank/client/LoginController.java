@@ -5,11 +5,10 @@
  */
 package bank.client;
 
-import bank.interfaces.communication.IBalie;
-import bank.interfaces.communication.IBankierSessie;
-import bank.interfaces.domain.IRekening;
 import bank.exceptions.InvalidSessionException;
-
+import bank.interfaces.communication.IBankProvider;
+import bank.interfaces.communication.ISession;
+import bank.interfaces.domain.IBankAccount;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -39,11 +38,11 @@ public class LoginController implements Initializable {
     @FXML
     private TextArea taMessages;
 
-    private IBalie balie;
-    private IBankierSessie sessie;
-    private BankierClient application;
+    private IBankProvider balie;
+    private ISession sessie;
+    private BankingClient application;
 
-    public void setApp(BankierClient application, IBalie balie, String AccountName) {
+    public void setApp(BankingClient application, IBankProvider balie, String AccountName) {
         this.balie = balie;
         this.application = application;
         this.tfAccount.setText(AccountName);
@@ -60,14 +59,14 @@ public class LoginController implements Initializable {
     }
 
     @FXML
-    private void login(ActionEvent event) throws InvalidSessionException  {
+    private void login(ActionEvent event) throws InvalidSessionException {
         try {
             sessie = balie.logIn(tfAccount.getText(), tfPassword.getText());
             if (sessie == null) {
                 taMessages.setText("accountname or password not correct");
             } else {
-                IRekening r = sessie.getRekening();
-                System.out.println("Rekening" + r.getSaldo());
+                IBankAccount r = sessie.getRekening();
+                System.out.println("Rekening" + r.getBalance());
                 application.gotoBankierSessie(balie, sessie);
             }
         } catch (RemoteException e1) {

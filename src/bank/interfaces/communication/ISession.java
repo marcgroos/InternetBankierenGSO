@@ -1,19 +1,19 @@
 package bank.interfaces.communication;
 
-import bank.interfaces.domain.IRekening;
-import bank.server.domain.Money;
 import bank.exceptions.InvalidSessionException;
 import bank.exceptions.NumberDoesntExistException;
+import bank.interfaces.domain.IBankAccount;
+import bank.server.domain.Money;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface IBankierSessie extends Remote {
+public interface ISession extends Remote {
 
     long GELDIGHEIDSDUUR = 600000;
 
     /**
-     * @returns true als de laatste aanroep van getRekening of maakOver voor deze
+     * @returns true als de laatste aanroep van getBankAccount of transferMoney voor deze
      * sessie minder dan GELDIGHEIDSDUUR geleden is
      * en er geen communicatiestoornis in de tussentijd is opgetreden,
      * anders false
@@ -45,5 +45,5 @@ public interface IBankierSessie extends Remote {
      * @throws InvalidSessionException als de sessieId niet geldig of verlopen is
      * @throws RemoteException
      */
-    IRekening getRekening() throws InvalidSessionException, RemoteException;
+    IBankAccount getRekening() throws InvalidSessionException, RemoteException;
 }

@@ -2,9 +2,8 @@ package bank.interfaces.domain;
 
 import java.io.Serializable;
 
-public interface IKlant extends Serializable, Comparable<IKlant> {
+public interface IUserAccount extends Serializable, Comparable<IUserAccount> {
     String getNaam();
-
     String getPlaats();
 }
 
