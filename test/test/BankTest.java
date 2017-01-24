@@ -98,7 +98,9 @@ public class BankTest {
             bank1.maakOver(100000000, 100000000, money);
             Assert.fail();
 
-        } catch (RuntimeException ex) { }
+        } catch (RuntimeException ex) {
+            System.out.println("Cant send money to the same account");
+        }
 
 
         // Try to transfer a negative value
@@ -106,14 +108,18 @@ public class BankTest {
             bank1.maakOver(100000000, 100000000, negative_money);
             Assert.fail();
 
-        } catch (RuntimeException ex) { }
+        } catch (RuntimeException ex) {
+            System.out.println("Can't send negatie money");
+        }
 
         // Try to catch the NumberDoesntExistException
         try{
             bank1.maakOver(100000000, 69, money);
             Assert.fail();
 
-        } catch (NumberDoesntExistException ex) { }
+        } catch (NumberDoesntExistException ex) {
+            System.out.println("Account doesnt exist");
+        }
     }
 
     /**
