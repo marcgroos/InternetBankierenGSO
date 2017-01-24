@@ -1,24 +1,23 @@
 package test;
 
-import bank.interfaces.communication.IBankierSessie;
-import bank.server.balie.Balie;
+import bank.interfaces.communication.ISession;
+import bank.server.balie.BankProvider;
 import bank.server.domain.Bank;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
 
 /**
  * @author guill
  **/
-public class BalieTest {
+public class BankProviderTest {
 
-    private static Balie balie;
+    private static BankProvider balie;
 
     @Before
     public void setUp() throws Exception {
-        balie = new Balie(new Bank("Rabobank"));
+        balie = new BankProvider(new Bank("Rabobank"));
     }
 
     /**
@@ -29,23 +28,23 @@ public class BalieTest {
      * and when it returns the accountname.
      */
     @Test
-    public void openRekening() throws Exception {
+    public void openBankAccount() throws Exception {
 
         // Fill everything "correct" in
-        Assert.assertNotNull(balie.openRekening("Bretels", "Marcoes", "123456"));
+        Assert.assertNotNull(balie.openBankAccount("Bretels", "Marcoes", "123456"));
 
         // Dont send the name
-        Assert.assertNull(balie.openRekening("", "Maatstad", "Werken"));
+        Assert.assertNull(balie.openBankAccount("", "Maatstad", "Werken"));
 
         // Dont send the City
-        Assert.assertNull(balie.openRekening("Bretels", "", "Werken"));
+        Assert.assertNull(balie.openBankAccount("Bretels", "", "Werken"));
 
         // Dont fill in the password
-        Assert.assertNull(balie.openRekening("Bretels", "Maatstad", ""));
+        Assert.assertNull(balie.openBankAccount("Bretels", "Maatstad", ""));
 
         // Send a password that is to short and to long
-        Assert.assertNull(balie.openRekening("Bretels", "Maat", "wer"));
-        Assert.assertNull(balie.openRekening("Bretels", "Maat", "werkenisleuk"));
+        Assert.assertNull(balie.openBankAccount("Bretels", "Maat", "wer"));
+        Assert.assertNull(balie.openBankAccount("Bretels", "Maat", "werkenisleuk"));
     }
 
     /**
@@ -63,20 +62,20 @@ public class BalieTest {
         Assert.assertNull(balie.logIn("Maat", null));
 
         // Add a account to the balie
-        String account = balie.openRekening("Arie", "Weert", "Maatwerk");
+        String account = balie.openBankAccount("Arie", "Weert", "Maatwerk");
 
         // Login with wrong password
         Assert.assertNull(balie.logIn(account, "Maat"));
 
         // Login with correct password and retreive IBankiersessie
-        IBankierSessie sessie = balie.logIn(account, "Maatwerk");
+        ISession sessie = balie.logIn(account, "Maatwerk");
 
         // Check if we got a sessie
         Assert.assertNotNull(sessie);
 
         // Check if seesie is valid
         Assert.assertTrue(sessie.isGeldig());
-        Assert.assertEquals("Arie", sessie.getRekening().getEigenaar());
+        Assert.assertEquals("Arie", sessie.getRekening().getOwner().getName());
     }
 
 }

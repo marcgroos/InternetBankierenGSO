@@ -34,21 +34,21 @@ public class BankTest {
      * account will be created on a good way.
      */
     @Test
-    public void openRekening() throws Exception {
+    public void openBankAccount() throws Exception {
 
         // Open 2 accounts in bank1
-        int result = bank1.openRekening("Frans Duits", "Frankrijk/Duitsland");
-        bank1.openRekening("Frans Bauer", "Noord/Brabant");
+        int result = bank1.openBankAccount("Frans Duits", "Frankrijk/Duitsland");
+        bank1.openBankAccount("Frans Bauer", "Noord/Brabant");
 
         // Gaat fout omdat en geen plaats is
-        Assert.assertEquals(-1, bank1.openRekening("Huisbaas", ""));
+        Assert.assertEquals(-1, bank1.openBankAccount("Huisbaas", ""));
 
         // Open 2 accounts in bank 2
-        bank2.openRekening("Bob Ross", "America");
-        int result2 = bank2.openRekening("Rob Geus", "Smaakpolitie");
+        bank2.openBankAccount("Bob Ross", "America");
+        int result2 = bank2.openBankAccount("Rob Geus", "Smaakpolitie");
 
         // Gaat fout omdat er geen naam is
-        Assert.assertEquals(-1 , bank2.openRekening("", "Bretels en Marcoes"));
+        Assert.assertEquals(-1 , bank2.openBankAccount("", "Bretels en Marcoes"));
 
         // Check if accountnumbers are correct
         Assert.assertEquals(100000000, result);
@@ -62,17 +62,17 @@ public class BankTest {
      * as we the returnvalue from creating it.
      */
     @Test
-    public void getRekening() throws Exception {
+    public void getBankAccount() throws Exception {
 
         // Create account on bank 1
-        int nr = bank1.openRekening("Bob Ross", "America");
-        Assert.assertEquals(nr, bank1.getRekening(nr).getNr());
-        Assert.assertEquals("Bob Ross", bank1.getRekening(nr).getEigenaar().getNaam());
+        int nr = bank1.openBankAccount("Bob Ross", "America");
+        Assert.assertEquals(nr, bank1.getBankAccount(nr).getNr());
+        Assert.assertEquals("Bob Ross", bank1.getBankAccount(nr).getOwner().getName());
 
         // Create account on bank 2
-        int nr2 = bank2.openRekening("Bretels", "Marcoes");
-        Assert.assertEquals(nr2, bank2.getRekening(nr2).getNr());
-        Assert.assertEquals("Bretels", bank2.getRekening(nr2).getEigenaar().getNaam());
+        int nr2 = bank2.openBankAccount("Bretels", "Marcoes");
+        Assert.assertEquals(nr2, bank2.getBankAccount(nr2).getNr());
+        Assert.assertEquals("Bretels", bank2.getBankAccount(nr2).getOwner().getName());
     }
 
     /**
@@ -84,18 +84,18 @@ public class BankTest {
      * negative money and at last we try to send money to an not existing account
      */
     @Test
-    public void maakOver() throws Exception {
+    public void transferMoney() throws Exception {
 
         // Add 2 accounts to the bank
-        bank1.openRekening("Ruurd", "Eindhoven");
-        bank1.openRekening("Ben", "Eindhoven");
+        bank1.openBankAccount("Ruurd", "Eindhoven");
+        bank1.openBankAccount("Ben", "Eindhoven");
 
         // Check if it returns true when transfer it to other account
-        Assert.assertTrue(bank1.maakOver(100000000, 100000001, money));
+        Assert.assertTrue(bank1.transferMoney(100000000, 100000001, money));
 
         // Try to transfer money to own account
         try{
-            bank1.maakOver(100000000, 100000000, money);
+            bank1.transferMoney(100000000, 100000000, money);
             Assert.fail();
 
         } catch (RuntimeException ex) {
@@ -105,7 +105,7 @@ public class BankTest {
 
         // Try to transfer a negative value
         try{
-            bank1.maakOver(100000000, 100000000, negative_money);
+            bank1.transferMoney(100000000, 100000000, negative_money);
             Assert.fail();
 
         } catch (RuntimeException ex) {
@@ -114,7 +114,7 @@ public class BankTest {
 
         // Try to catch the NumberDoesntExistException
         try{
-            bank1.maakOver(100000000, 69, money);
+            bank1.transferMoney(100000000, 69, money);
             Assert.fail();
 
         } catch (NumberDoesntExistException ex) {

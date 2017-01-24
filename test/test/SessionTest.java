@@ -1,8 +1,8 @@
 package test;
 
-import bank.interfaces.communication.IBankierSessie;
+import bank.interfaces.communication.ISession;
 import bank.interfaces.domain.IBank;
-import bank.server.balie.BankierSessie;
+import bank.server.balie.Session;
 import bank.server.domain.Bank;
 import bank.server.domain.Money;
 import org.junit.Assert;
@@ -16,20 +16,20 @@ import static org.junit.Assert.*;
 /**
  *@author guill  
  **/
-public class BankierSessieTest {
+public class SessionTest {
 
     private IBank bank1;
-    private IBankierSessie sessie;
+    private ISession sessie;
 
     private int rekNr1, rekNr2;
 
     @Before
     public void setUp() throws Exception {
         bank1 = new Bank("Rabobank");
-        rekNr1 = bank1.openRekening("Hans", "Maat");
-        rekNr2 = bank1.openRekening("Piet", "Werk");
+        rekNr1 = bank1.openBankAccount("Hans", "Maat");
+        rekNr2 = bank1.openBankAccount("Piet", "Werk");
 
-        sessie = new BankierSessie(rekNr1, bank1);
+        sessie = new Session(rekNr1, bank1);
     }
 
     /**
@@ -43,7 +43,7 @@ public class BankierSessieTest {
     public void isGeldig() throws Exception {
 
         // Check if sessie has the right owner an is valid
-        Assert.assertEquals("Hans", sessie.getRekening().getEigenaar().getNaam());
+        Assert.assertEquals("Hans", sessie.getRekening().getOwner().getName());
         Assert.assertTrue(sessie.isGeldig());
     }
 

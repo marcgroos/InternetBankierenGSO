@@ -18,19 +18,19 @@ class UserAccount implements IUserAccount {
         this.plaats = plaats;
     }
 
-    public String getNaam() {
+    public String getName() {
         return naam;
     }
 
-    public String getPlaats() {
+    public String getCity() {
         return plaats;
     }
 
     public int compareTo(IUserAccount arg0) {
         IUserAccount klant = (IUserAccount) arg0;
-        int comp = naam.compareTo(klant.getNaam());
+        int comp = naam.compareTo(klant.getName());
         if (comp != 0) return comp;
-        return plaats.compareTo(klant.getPlaats());
+        return plaats.compareTo(klant.getCity());
     }
 
     public boolean equals(IUserAccount o) {

@@ -43,7 +43,7 @@ public class Bank implements IBank {
 
     private IUserAccount getUserAccount(String name, String city) {
         for (IUserAccount k : clients) {
-            if (k.getNaam().equals(name) && k.getPlaats().equals(city))
+            if (k.getName().equals(name) && k.getCity().equals(city))
                 return k;
         }
         IUserAccount klant = new UserAccount(name, city);

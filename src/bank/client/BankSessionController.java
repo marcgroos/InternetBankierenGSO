@@ -64,8 +64,8 @@ public class BankSessionController implements Initializable {
             rekening = sessie.getRekening();
             tfAccountNr.setText(rekening.getNr() + "");
             tfBalance.setText(rekening.getBalance() + "");
-            String eigenaar = rekening.getOwner().getNaam() + " te "
-                    + rekening.getOwner().getPlaats();
+            String eigenaar = rekening.getOwner().getName() + " te "
+                    + rekening.getOwner().getCity();
             tfNameCity.setText(eigenaar);
         } catch (InvalidSessionException ex) {
             taMessage.setText("bankiersessie is verlopen");
