@@ -1,7 +1,7 @@
 package bank.interfaces.domain;
 
 import bank.server.domain.Money;
-import fontys.util.NumberDoesntExistException;
+import bank.exceptions.NumberDoesntExistException;
 
 /**
  * @author 871059

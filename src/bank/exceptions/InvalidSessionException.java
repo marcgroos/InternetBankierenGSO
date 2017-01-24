@@ -1,4 +1,4 @@
-package fontys.util;
+package bank.exceptions;
 
 public class InvalidSessionException extends Exception {
     /**

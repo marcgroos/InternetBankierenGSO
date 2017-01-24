@@ -91,7 +91,7 @@ public class BalieServer extends Application {
 
     public void gotoBankSelect() {
         try {
-            BalieController bankSelect = (BalieController) replaceSceneContent("Balie.fxml");
+            BalieController bankSelect = (BalieController) replaceSceneContent("balie/fxml/Balie.fxml");
             bankSelect.setApp(this);
         } catch (Exception ex) {
             Logger.getLogger(BankierClient.class.getName()).log(Level.SEVERE, null, ex);

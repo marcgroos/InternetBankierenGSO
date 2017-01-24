@@ -5,7 +5,7 @@ import bank.interfaces.domain.IBank;
 import bank.interfaces.domain.IKlant;
 import bank.interfaces.domain.IRekening;
 import bank.interfaces.domain.IRekeningBank;
-import fontys.util.NumberDoesntExistException;
+import bank.exceptions.NumberDoesntExistException;
 
 import java.util.ArrayList;
 import java.util.Collection;

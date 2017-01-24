@@ -4,8 +4,8 @@ import bank.interfaces.communication.IBankierSessie;
 import bank.interfaces.domain.IBank;
 import bank.interfaces.domain.IRekening;
 import bank.server.domain.Money;
-import fontys.util.InvalidSessionException;
-import fontys.util.NumberDoesntExistException;
+import bank.exceptions.InvalidSessionException;
+import bank.exceptions.NumberDoesntExistException;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;

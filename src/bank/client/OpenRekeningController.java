@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -50,11 +51,14 @@ public class OpenRekeningController implements Initializable {
         tfName.setPromptText("Naam");
         tfCity.setPromptText("Woonplaats");
         tfPassWord.setPromptText("Wachtwoord");
+
+//        btRegister.setOnMouseClicked(this::registerAccount);
     }
 
     @FXML
     private void registerAccount(ActionEvent event) {
         try {
+            System.out.println("registering...");
             String accountNaam;
             accountNaam = balie.openRekening(tfName.getText(), tfCity.getText(), tfPassWord.getText());
             if (accountNaam == null) {

@@ -8,7 +8,8 @@ package bank.client;
 import bank.interfaces.communication.IBalie;
 import bank.interfaces.communication.IBankierSessie;
 import bank.interfaces.domain.IRekening;
-import fontys.util.InvalidSessionException;
+import bank.exceptions.InvalidSessionException;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -59,7 +60,7 @@ public class LoginController implements Initializable {
     }
 
     @FXML
-    private void login(ActionEvent event) throws InvalidSessionException {
+    private void login(ActionEvent event) throws InvalidSessionException  {
         try {
             sessie = balie.logIn(tfAccount.getText(), tfPassword.getText());
             if (sessie == null) {

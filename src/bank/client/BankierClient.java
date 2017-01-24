@@ -65,7 +65,7 @@ public class BankierClient extends Application {
             String rmiBalie = props.getProperty("balie");
             in.close();
 
-            IBalie balie = (IBalie) Naming.lookup("fontys.rmi://" + rmiBalie);
+            IBalie balie = (IBalie) Naming.lookup("rmi://" + rmiBalie);
             return balie;
 
         } catch (Exception exc) {
@@ -76,7 +76,7 @@ public class BankierClient extends Application {
 
     protected void gotoBankSelect() {
         try {
-            BankSelectController bankSelect = (BankSelectController) replaceSceneContent("BankSelect.fxml");
+            BankSelectController bankSelect = (BankSelectController) replaceSceneContent("fxml/BankSelect.fxml");
             bankSelect.setApp(this);
         } catch (Exception ex) {
             Logger.getLogger(BankierClient.class.getName()).log(Level.SEVERE, null, ex);
@@ -85,7 +85,7 @@ public class BankierClient extends Application {
 
     protected void gotoLogin(IBalie balie, String accountNaam) {
         try {
-            LoginController login = (LoginController) replaceSceneContent("Login.fxml");
+            LoginController login = (LoginController) replaceSceneContent("fxml/Login.fxml");
             login.setApp(this, balie, accountNaam);
         } catch (Exception ex) {
             Logger.getLogger(BankierClient.class.getName()).log(Level.SEVERE, null, ex);
@@ -94,7 +94,7 @@ public class BankierClient extends Application {
 
     protected void gotoOpenRekening(IBalie balie) {
         try {
-            OpenRekeningController openRekeningController = (OpenRekeningController) replaceSceneContent("OpenRekening.fxml");
+            OpenRekeningController openRekeningController = (OpenRekeningController) replaceSceneContent("fxml/OpenRekening.fxml");
             openRekeningController.setApp(this, balie);
         } catch (Exception ex) {
             Logger.getLogger(BankierClient.class.getName()).log(Level.SEVERE, null, ex);
@@ -103,7 +103,7 @@ public class BankierClient extends Application {
 
     protected void gotoBankierSessie(IBalie balie, IBankierSessie sessie) {
         try {
-            BankierSessieController sessionController = (BankierSessieController) replaceSceneContent("BankierSessie.fxml");
+            BankierSessieController sessionController = (BankierSessieController) replaceSceneContent("fxml/BankierSessie.fxml");
             sessionController.setApp(this, balie, sessie);
         } catch (Exception ex) {
             Logger.getLogger(BankierClient.class.getName()).log(Level.SEVERE, null, ex);
