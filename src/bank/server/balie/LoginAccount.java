@@ -7,9 +7,9 @@ public class LoginAccount implements ILoginAccount {
 
     private String naam;
     private String wachtwoord;
-    private int reknr;
+    private String reknr;
 
-    public LoginAccount(String naam, String wachtwoord, int rekening) {
+    public LoginAccount(String naam, String wachtwoord, String rekening) {
         this.naam = naam;
         this.wachtwoord = wachtwoord;
         this.reknr = rekening;
@@ -23,7 +23,7 @@ public class LoginAccount implements ILoginAccount {
         return naam;
     }
 
-    public int getReknr() {
+    public String getReknr() {
         return reknr;
     }
 

@@ -7,15 +7,18 @@ import bank.server.rmi.BalancePublisher;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Map;
 
 /**
  * Created by guill on 25-1-2017.
  */
 public interface ICentralBank extends Remote {
 
-    int getUniqueRekNr(String bankName) throws RemoteException;
+    String getUniqueRekNr(String bankName) throws RemoteException;
 
     void registerBank(String bankName, IBankTransfer bank) throws RemoteException;
 
-    boolean transfer(int from, int to, Money amount) throws RemoteException, NumberDoesntExistException;
+    boolean transfer(String from, String to, Money amount) throws RemoteException, NumberDoesntExistException;
+
+    Map<String, IBankTransfer> getBanken();
 }

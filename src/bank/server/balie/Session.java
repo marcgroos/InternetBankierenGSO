@@ -15,10 +15,10 @@ public class Session extends UnicastRemoteObject implements
 
     private static final long serialVersionUID = 1L;
     private long lastCall;
-    private int accountNr;
+    private String accountNr;
     private IBank bank;
 
-    public Session(int accountNr, IBank bank) throws RemoteException {
+    public Session(String accountNr, IBank bank) throws RemoteException {
         lastCall = System.currentTimeMillis();
         this.accountNr = accountNr;
         this.bank = bank;
@@ -29,7 +29,7 @@ public class Session extends UnicastRemoteObject implements
     }
 
     @Override
-    public boolean transferMoney(int bestemming, Money bedrag)
+    public boolean transferMoney(String bestemming, Money bedrag)
             throws NumberDoesntExistException, InvalidSessionException,
             RemoteException {
 

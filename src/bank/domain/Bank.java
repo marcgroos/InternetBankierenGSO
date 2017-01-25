@@ -20,34 +20,36 @@ public class Bank implements IBank, IBankTransfer, AutoCloseable {
      *
      */
     private static final long serialVersionUID = -8728841131739353765L;
-    private Map<Integer, IMutateable> accounts;
+    private Map<String, IMutateable> accounts;
     private Collection<IUserAccount> clients;
-    private int nieuwReknr;
+    private String nieuwReknr;
+    private String prefix;
     private String name;
     private ICentralBank centralBank;
 
     public Bank(ICentralBank bankCentrale, String name) throws RemoteException {
-        accounts = new HashMap<Integer, IMutateable>();
+        accounts = new HashMap<String, IMutateable>();
         clients = new ArrayList<IUserAccount>();
-        nieuwReknr = 100000000;
+        nieuwReknr = 100000000 + "";
         this.name = name;
         this.centralBank = bankCentrale;
+        this.prefix = name.substring(0, 2).toUpperCase();
 
-        centralBank.registerBank(name, this);
     }
 
-    public int openBankAccount(String name, String city) throws RemoteException {
+    public String openBankAccount(String name, String city) throws RemoteException {
         if (name.equals("") || city.equals(""))
-            return -1;
+            return null;
 
-        int accountNr = centralBank.getUniqueRekNr(this.name);
-        IMutateable account = new BankAccount(accountNr, getUserAccount(name, city), Money.EURO);
-        accounts.put(accountNr, account);
+        String accountString = centralBank.getUniqueRekNr(this.name);
+
+        IMutateable account = new BankAccount(accountString, getUserAccount(name, city), Money.EURO);
+        accounts.put(accountString, account);
 
         // Register property
         BankServer.balancePublisher.registerProperty(account);
 
-        return accountNr;
+        return accountString;
 
 /*        IUserAccount klant = getUserAccount(name, city);
         IMutateable account = new BankAccount(nieuwReknr, klant, Money.EURO);
@@ -68,17 +70,22 @@ public class Bank implements IBank, IBankTransfer, AutoCloseable {
         return klant;
     }
 
-    public IBankAccount getBankAccount(int nr) {
+    public IBankAccount getBankAccount(String nr) {
         return accounts.get(nr);
     }
 
-    public boolean transferMoney(int source, int destination, Money money)
+    public boolean transferMoney(String source, String destination, Money money)
             throws NumberDoesntExistException {
+
+        // Source is the same as destination.
         if (source == destination)
             throw new RuntimeException(
                     "cannot transferMoney money to your own account");
+
+        // Negative money
         if (!money.isPositive())
             throw new RuntimeException("money must be positive");
+
 
         IMutateable source_account = (IMutateable) getBankAccount(source);
         if (source_account == null)
@@ -86,16 +93,20 @@ public class Bank implements IBank, IBankTransfer, AutoCloseable {
                     + " unknown at " + name);
 
         IMutateable dest_account = (IMutateable) getBankAccount(destination);
-        if (dest_account == null)
-            throw new NumberDoesntExistException("account " + destination
-                    + " unknown at " + name);
+//        if (dest_account == null)
+//            throw new NumberDoesntExistException("account " + destination
+//                    + " unknown at " + name);
 
-        if (source_account != null && dest_account != null) {
+
+        System.out.println(source_account.getPrefix());
+        // Internal transfer (equal prefix)
+        if (dest_account != null && source_account.getPrefix().equals(dest_account.getPrefix())) {
             return internalTransfer(money, source_account, dest_account);
         }
 
+        // Central bank transfer (unequal prefix)
         try {
-            return centralBank.transfer(source_account.getNr(), dest_account.getNr(), money);
+            return centralBank.transfer(source, destination, money);
         } catch (RemoteException e) {
             e.printStackTrace();
             return false;
@@ -116,8 +127,8 @@ public class Bank implements IBank, IBankTransfer, AutoCloseable {
             if (!success) {
                 source_account.mutate(money);
             } else {
-//                this.balancePublisher.informBalance(source_account);
-//                this.balancePublisher.informBalance(dest_account);
+                BankServer.balancePublisher.informBalance(source_account);
+                BankServer.balancePublisher.informBalance(dest_account);
             }
             return success;
         }
@@ -129,7 +140,7 @@ public class Bank implements IBank, IBankTransfer, AutoCloseable {
     }
 
     @Override
-    public boolean mutate(int nr, Money money) throws RemoteException {
+    public boolean mutate(String nr, Money money) throws RemoteException {
         IMutateable account = (IMutateable) getBankAccount(nr);
         boolean succes = account.mutate(money);
         if (succes) BankServer.balancePublisher.informBalance(account);

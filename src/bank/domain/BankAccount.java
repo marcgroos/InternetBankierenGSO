@@ -9,7 +9,7 @@ class BankAccount implements IMutateable {
 
     private static final long serialVersionUID = 7221569686169173632L;
     private static final int CREDIT_LIMIT = -10000;
-    private int nr;
+    private String nr;
     private IUserAccount owner;
     private Money balance;
 
@@ -23,7 +23,7 @@ class BankAccount implements IMutateable {
      * @param currency de munteenheid waarin het balance is uitgedrukt
      * @see banking.persistence.PersistentBank
      */
-    BankAccount(int number, IUserAccount klant, String currency) {
+    BankAccount(String number, IUserAccount klant, String currency) {
         this(number, klant, new Money(1000, currency));
     }
 
@@ -38,7 +38,7 @@ class BankAccount implements IMutateable {
      * @param currency de munteenheid waarin het balance is uitgedrukt
      * @see banking.persistence.PersistentBank
      */
-    BankAccount(int number, IUserAccount klant, Money balance) {
+    BankAccount(String number, IUserAccount klant, Money balance) {
 
         this.nr = number;
         this.owner = klant;
@@ -50,7 +50,7 @@ class BankAccount implements IMutateable {
         return nr == ((IBankAccount) obj).getNr();
     }
 
-    public int getNr() {
+    public String getNr() {
         return nr;
     }
 
@@ -87,5 +87,10 @@ class BankAccount implements IMutateable {
     @Override
     public int getCreditLimitInCents() {
         return CREDIT_LIMIT;
+    }
+
+    @Override
+    public String getPrefix() {
+        return nr.substring(0, nr.indexOf("-"));
     }
 }

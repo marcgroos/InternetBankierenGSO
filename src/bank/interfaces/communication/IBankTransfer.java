@@ -10,5 +10,5 @@ import java.rmi.RemoteException;
  */
 
 public interface IBankTransfer extends Remote {
-    boolean mutate(int nr, Money money) throws RemoteException;
+    boolean mutate(String nr, Money money) throws RemoteException;
 }

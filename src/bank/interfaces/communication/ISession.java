@@ -31,7 +31,7 @@ public interface ISession extends Remote {
      * @throws NumberDoesntExistException als bestemming onbekend is
      * @throws InvalidSessionException    als sessie niet meer geldig is
      */
-    boolean transferMoney(int bestemming, Money bedrag)
+    boolean transferMoney(String bestemming, Money bedrag)
             throws NumberDoesntExistException, InvalidSessionException,
             RemoteException;
 

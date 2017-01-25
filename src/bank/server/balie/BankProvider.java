@@ -36,13 +36,13 @@ public class BankProvider extends UnicastRemoteObject implements IBankProvider {
         if (wachtwoord.length() < 4 || wachtwoord.length() > 8)
             return null;
 
-        int nr = 0;
+        String nr = null;
         try {
             nr = bank.openBankAccount(naam, plaats);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        if (nr == -1)
+        if (nr == null)
             return null;
 
         String accountname = generateId(8);

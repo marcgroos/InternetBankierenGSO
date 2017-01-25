@@ -18,7 +18,7 @@ public class SessionTest {
     private IBank bank1;
     private ISession sessie;
 
-    private int rekNr1, rekNr2;
+    private String rekNr1, rekNr2;
 
     @Before
     public void setUp() throws Exception {

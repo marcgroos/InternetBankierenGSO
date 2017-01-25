@@ -14,26 +14,40 @@ import java.util.Map;
 /**
  * Created by guill on 25-1-2017.
  */
-public class CentralBank implements Serializable, ICentralBank, AutoCloseable {
+public class CentralBank implements Serializable, ICentralBank {
 
-    final Map<Integer, String> rekeningen = new HashMap<>();
-    private final Map<String, IBankTransfer> banken = new HashMap<>();
+    private Map<String, String> rekeningen = new HashMap<>();
+    private Map<String, IBankTransfer> banken = new HashMap<>();
 
+    private String prefix;
 
     public CentralBank() throws RemoteException {
 
+    }
 
+    public Map<String, IBankTransfer> getBanken() {
+        return banken;
     }
 
     @Override
-    public int getUniqueRekNr(String bankName) throws RemoteException {
+    public String getUniqueRekNr(String bankName) throws RemoteException {
+
+        prefix = bankName.substring(0, 3).toUpperCase();
+
+
         synchronized (rekeningen) {
-            for (int i = 0; ; i++) {
-                if (!rekeningen.containsKey(i)) {
-                    rekeningen.put(i, bankName);
-                    return i;
-                }
-            }
+
+            String out = prefix + "-" + (rekeningen.size() + 1);
+            rekeningen.put(out, bankName);
+            return out;
+//            for (int i = 1; ; i++) {
+//                if (!rekeningen.containsKey(prefix + i)) {
+//
+//                    String out = prefix + "-" + i;
+//                    rekeningen.put(out, bankName);
+//                    return out;
+//                }
+//            }
         }
     }
 
@@ -44,7 +58,7 @@ public class CentralBank implements Serializable, ICentralBank, AutoCloseable {
     }
 
     @Override
-    public boolean transfer(int from, int to, Money amount) throws RemoteException, NumberDoesntExistException {
+    public boolean transfer(String from, String to, Money amount) throws RemoteException, NumberDoesntExistException {
         IBankTransfer src = getBankFromAccountNumber(from);
         IBankTransfer dst = getBankFromAccountNumber(to);
 
@@ -61,14 +75,9 @@ public class CentralBank implements Serializable, ICentralBank, AutoCloseable {
         return success;
     }
 
-    IBankTransfer getBankFromAccountNumber(int rekNr) throws NumberDoesntExistException {
+    IBankTransfer getBankFromAccountNumber(String rekNr) throws NumberDoesntExistException {
         String bankName = rekeningen.get(rekNr);
         if (bankName == null) throw new NumberDoesntExistException("account" + rekNr + "is unknown");
         return banken.get(bankName);
-    }
-
-    @Override
-    public void close() throws Exception {
-        UnicastRemoteObject.unexportObject(this, true);
     }
 }

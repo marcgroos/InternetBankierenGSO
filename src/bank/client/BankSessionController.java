@@ -103,8 +103,8 @@ public class BankSessionController implements Initializable {
     @FXML
     private void transfer(ActionEvent event) {
         try {
-            int from = Integer.parseInt(tfAccountNr.getText());
-            int to = Integer.parseInt(tfToAccountNr.getText());
+            String from = tfAccountNr.getText();
+            String to = tfToAccountNr.getText();
             if (from == to) {
                 taMessage.setText("can't transferMoney money to your own account");
             }

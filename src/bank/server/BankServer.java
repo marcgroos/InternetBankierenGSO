@@ -24,6 +24,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -43,10 +44,15 @@ public class BankServer extends Application {
 
     public static BalancePublisher balancePublisher;
 
+    private static Registry registry;
+
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RemoteException {
+
+        registry = LocateRegistry.createRegistry(ConnConst.BANK_SERVER_PORT);
+
         launch(args);
     }
 
@@ -74,12 +80,11 @@ public class BankServer extends Application {
         try {
             try {
                 ICentralBank centralBank = getRemoteCentralBank();
-                centralBank.registerBank(bankName, new Bank(centralBank, bankName));
-                IBank bank = new Bank(getRemoteCentralBank(), bankName);
+
+                Bank bank = new Bank(centralBank, bankName);
+                centralBank.registerBank(bankName, bank);
+
                 IBankProvider bankProvider = new BankProvider(bank);
-
-                Registry registry = LocateRegistry.createRegistry(ConnConst.BANK_SERVER_PORT);
-
                 registry.rebind(bankName, bankProvider);
 
             } catch (NotBoundException e) {

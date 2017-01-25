@@ -13,13 +13,10 @@ import java.util.Scanner;
  * Created by guill on 25-1-2017.
  */
 public class CentralBankServer {
-
-
-
     public static void main(String[] arg) {
 
-        try (CentralBank bankCentrale = new CentralBank()) {
-
+        try{
+            CentralBank bankCentrale = new CentralBank();
             System.out.println("CentralBank has started");
 
             Registry registry = LocateRegistry.createRegistry(ConnConst.CENTRAL_SERVER_PORT);
@@ -27,13 +24,13 @@ public class CentralBankServer {
 
             System.out.println("CentralBank is bound in the registry");
 
-            // Waiting to close
-            new Scanner(System.in).next();
-            System.out.println("CentralBank is closing");
-
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // Waiting to close
+        new Scanner(System.in).next();
+        System.out.println("CentralBank is closing");
 
     }
 }

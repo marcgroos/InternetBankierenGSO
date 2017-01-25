@@ -6,12 +6,14 @@ import bank.domain.Money;
 import java.io.Serializable;
 
 public interface IBankAccount extends Serializable {
-    int getNr();
+    String getNr();
 
     Money getBalance();
 
     IUserAccount getOwner();
 
     int getCreditLimitInCents();
+
+    String getPrefix();
 }
 

@@ -36,15 +36,15 @@ public class BankTest {
     public void openBankAccount() throws Exception {
 
         // Open 2 accounts in bank1
-        int result = bank1.openBankAccount("Frans Duits", "Frankrijk/Duitsland");
-        bank1.openBankAccount("Frans Bauer", "Noord/Brabant");
+        String result = bank1.openBankAccount("Frans Duits", "Frankrijk/Duitsland");
+        bank1.openBankAccount("Frans Bauer", "Noord-Brabant");
 
         // Gaat fout omdat en geen plaats is
         Assert.assertEquals(-1, bank1.openBankAccount("Huisbaas", ""));
 
         // Open 2 accounts in bank 2
         bank2.openBankAccount("Bob Ross", "America");
-        int result2 = bank2.openBankAccount("Rob Geus", "Smaakpolitie");
+        String result2 = bank2.openBankAccount("Rob Geus", "Smaakpolitie");
 
         // Gaat fout omdat er geen naam is
         Assert.assertEquals(-1 , bank2.openBankAccount("", "Bretels en Marcoes"));
@@ -64,12 +64,12 @@ public class BankTest {
     public void getBankAccount() throws Exception {
 
         // Create account on bank 1
-        int nr = bank1.openBankAccount("Bob Ross", "America");
+        String nr = bank1.openBankAccount("Bob Ross", "America");
         Assert.assertEquals(nr, bank1.getBankAccount(nr).getNr());
         Assert.assertEquals("Bob Ross", bank1.getBankAccount(nr).getOwner().getName());
 
         // Create account on bank 2
-        int nr2 = bank2.openBankAccount("Bretels", "Marcoes");
+        String nr2 = bank2.openBankAccount("Bretels", "Marcoes");
         Assert.assertEquals(nr2, bank2.getBankAccount(nr2).getNr());
         Assert.assertEquals("Bretels", bank2.getBankAccount(nr2).getOwner().getName());
     }
@@ -90,11 +90,11 @@ public class BankTest {
         bank1.openBankAccount("Ben", "Eindhoven");
 
         // Check if it returns true when transfer it to other account
-        Assert.assertTrue(bank1.transferMoney(100000000, 100000001, money));
+        Assert.assertTrue(bank1.transferMoney("100000000", "100000001", money));
 
         // Try to transfer money to own account
         try{
-            bank1.transferMoney(100000000, 100000000, money);
+            bank1.transferMoney("100000000", "100000000", money);
             Assert.fail();
 
         } catch (RuntimeException ex) {
@@ -104,7 +104,7 @@ public class BankTest {
 
         // Try to transfer a negative value
         try{
-            bank1.transferMoney(100000000, 100000000, negative_money);
+            bank1.transferMoney("100000000", "100000000", negative_money);
             Assert.fail();
 
         } catch (RuntimeException ex) {
@@ -113,7 +113,7 @@ public class BankTest {
 
         // Try to catch the NumberDoesntExistException
         try{
-            bank1.transferMoney(100000000, 69, money);
+            bank1.transferMoney("100000000", "69", money);
             Assert.fail();
 
         } catch (NumberDoesntExistException ex) {

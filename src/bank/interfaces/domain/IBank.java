@@ -20,7 +20,7 @@ public interface IBank {
      * @return -1 zodra naam of plaats een lege string en anders het nummer van de
      * gecreeerde bankrekening
      */
-    int openBankAccount(String naam, String plaats) throws RemoteException;
+    String openBankAccount(String naam, String plaats) throws RemoteException;
 
     /**
      * er wordt bedrag overgemaakt van de bankrekening met nummer bron naar de
@@ -34,14 +34,14 @@ public interface IBank {
      * @return <b>true</b> als de overmaking is gelukt, anders <b>false</b>
      * @throws NumberDoesntExistException als een van de twee bankrekeningnummers onbekend is
      */
-    boolean transferMoney(int bron, int bestemming, Money bedrag)
+    boolean transferMoney(String bron, String bestemming, Money bedrag)
             throws NumberDoesntExistException;
 
     /**
      * @param nr
      * @return de bankrekening met nummer nr mits bij deze bank bekend, anders null
      */
-    IBankAccount getBankAccount(int nr);
+    IBankAccount getBankAccount(String nr);
 
     /**
      * @return de naam van deze bank
