@@ -3,10 +3,12 @@ package bank.domain;
 
 import bank.exceptions.NumberDoesntExistException;
 import bank.interfaces.domain.IBank;
-import bank.interfaces.domain.IUserAccount;
 import bank.interfaces.domain.IBankAccount;
 import bank.interfaces.domain.IMutateable;
+import bank.interfaces.domain.IUserAccount;
+import bank.server.rmi.BalancePublisher;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,12 +24,19 @@ public class Bank implements IBank {
     private Collection<IUserAccount> clients;
     private int nieuwReknr;
     private String name;
+    private BalancePublisher balancePublisher = null;
 
     public Bank(String name) {
         accounts = new HashMap<Integer, IMutateable>();
         clients = new ArrayList<IUserAccount>();
         nieuwReknr = 100000000;
         this.name = name;
+
+        try {
+            this.balancePublisher = new BalancePublisher();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     public int openBankAccount(String name, String city) {
@@ -37,6 +46,8 @@ public class Bank implements IBank {
         IUserAccount klant = getUserAccount(name, city);
         IMutateable account = new BankAccount(nieuwReknr, klant, Money.EURO);
         accounts.put(nieuwReknr, account);
+        balancePublisher.registerProperty(account); // Add to balance publisher
+
         nieuwReknr++;
         return nieuwReknr - 1;
     }
@@ -80,8 +91,12 @@ public class Bank implements IBank {
                     + " unknown at " + name);
         success = dest_account.mutate(money);
 
-        if (!success) // rollback
+        if (!success) {
             source_account.mutate(money);
+        } else {
+            this.balancePublisher.informBalance(source_account);
+            this.balancePublisher.informBalance(dest_account);
+        }
         return success;
     }
 

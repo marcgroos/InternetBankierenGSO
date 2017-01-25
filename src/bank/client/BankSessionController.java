@@ -5,7 +5,7 @@
  */
 package bank.client;
 
-import bank.client.rmi.BalanceListener;
+import bank.server.rmi.BalanceListener;
 import bank.exceptions.InvalidSessionException;
 import bank.exceptions.NumberDoesntExistException;
 import bank.interfaces.communication.IBankProvider;
@@ -57,26 +57,22 @@ public class BankSessionController implements Initializable {
     private IBankProvider balie;
     private ISession sessie;
 
-    public void setApp(BankingClient application, IBankProvider balie, ISession sessie) {
-        this.balie = balie;
-        this.sessie = sessie;
+    public void setApp(BankingClient application, IBankProvider bankProvider, ISession session) {
+        this.balie = bankProvider;
+        this.sessie = session;
         this.application = application;
 
-        try {
-            this.balanceListener = new BalanceListener(this, tfAccountNr.getText());
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
-        IBankAccount rekening = null;
+        IBankAccount bankAccount = null;
 
         try {
-            rekening = sessie.getRekening();
-            tfAccountNr.setText(rekening.getNr() + "");
-            tfBalance.setText(rekening.getBalance() + "");
-            String eigenaar = rekening.getOwner().getName() + " te "
-                    + rekening.getOwner().getCity();
+            bankAccount = session.getRekening();
+            tfAccountNr.setText(bankAccount.getNr() + "");
+            tfBalance.setText(bankAccount.getBalance() + "");
+            String eigenaar = bankAccount.getOwner().getName() + " te " + bankAccount.getOwner().getCity();
             tfNameCity.setText(eigenaar);
+
+            this.balanceListener = new BalanceListener(this, bankAccount);
+
         } catch (InvalidSessionException ex) {
             taMessage.setText("bankiersessie is verlopen");
             Logger.getLogger(BankSessionController.class.getName()).log(Level.SEVERE, null, ex);

@@ -1,7 +1,10 @@
-package bank.client.rmi;
+package bank.server.rmi;
 
 import bank.client.BankSessionController;
 import bank.domain.Money;
+import bank.interfaces.domain.IBankAccount;
+import bank.server.rmi.BalancePublisher;
+import bank.server.rmi.ConnectionConstants;
 import fontyspublisher.IRemotePropertyListener;
 import fontyspublisher.IRemotePublisherForListener;
 
@@ -14,28 +17,21 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class BalanceListener extends UnicastRemoteObject implements IRemotePropertyListener {
 
-
-    private static final String bindingName = "balancePublisher";
-
     private final BankSessionController bankSessionController;
+    private IBankAccount bankAccount;
     private IRemotePublisherForListener publisher;
     private Registry registry = null;
 
-    private String ipAddress;
-    private String propertyName;
-
-    public BalanceListener(BankSessionController bankSessionController, String accountNr) throws RemoteException {
-        this.ipAddress = "localhost";
+    public BalanceListener(BankSessionController bankSessionController, IBankAccount bankAccount) throws RemoteException {
         this.bankSessionController = bankSessionController;
-        this.propertyName = accountNr;
-
+        this.bankAccount = bankAccount;
         setUpListener();
     }
 
     public void setUpListener() {
         try {
             System.out.println("CLIENT: Trying to locate registry...");
-            registry = LocateRegistry.getRegistry(ipAddress, 1069);
+            registry = LocateRegistry.getRegistry(ConnectionConstants.HOST_ADDRESS, ConnectionConstants.PUBLISHER_PORT);
             System.out.println("CLIENT: Registry located");
         } catch (RemoteException ex) {
             System.out.println("CLIENT: Cannot locate registry");
@@ -45,11 +41,11 @@ public class BalanceListener extends UnicastRemoteObject implements IRemotePrope
 
         if (registry != null) {
             try {
-                System.out.println("CLIENT: Trying to subscribe to '" + propertyName + "'...");
-                publisher = (IRemotePublisherForListener) registry.lookup(bindingName);
-                publisher.subscribeRemoteListener(this, propertyName);
+                System.out.println("CLIENT: Trying to subscribe to '" + bankAccount.getNr() + "'...");
+                publisher = (IRemotePublisherForListener) registry.lookup(ConnectionConstants.PUBLISHER_BINDING_NAME);
+                publisher.subscribeRemoteListener(this, bankAccount.getNr() + "");
             } catch (RemoteException | NotBoundException ex) {
-                System.out.println("CLIENT: Cannot subscribe to '" + propertyName + "'");
+                System.out.println("CLIENT: Cannot subscribe to '" + bankAccount.getNr() + "'");
                 System.out.println("CLIENT: RemoteException: " + ex.getMessage());
                 registry = null;
             }

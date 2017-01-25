@@ -6,7 +6,9 @@ import bank.interfaces.domain.IBankAccount;
 import bank.interfaces.domain.IMutateable;
 import bank.server.rmi.BalancePublisher;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
 class BankAccount implements IMutateable {
 
@@ -15,7 +17,6 @@ class BankAccount implements IMutateable {
     private int nr;
     private IUserAccount owner;
     private Money balance;
-    private BalancePublisher publisher;
 
     /**
      * creatie van een bankrekening met balance van 0.0<br>
@@ -28,7 +29,7 @@ class BankAccount implements IMutateable {
      * @see banking.persistence.PersistentBank
      */
     BankAccount(int number, IUserAccount klant, String currency) {
-        this(number, klant, new Money(0, currency));
+        this(number, klant, new Money(100, currency));
     }
 
     /**
@@ -43,15 +44,11 @@ class BankAccount implements IMutateable {
      * @see banking.persistence.PersistentBank
      */
     BankAccount(int number, IUserAccount klant, Money balance) {
+
         this.nr = number;
         this.owner = klant;
         this.balance = balance;
 
-        try {
-            this.publisher = new BalancePublisher(this.nr);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
     public boolean equals(Object obj) {
@@ -86,8 +83,6 @@ class BankAccount implements IMutateable {
         if (isTransferPossible(bedrag)) {
             Money oldBalance = new Money(balance.getCents(), Money.EURO);
             balance = Money.sum(balance, bedrag);
-
-            publisher.informBalance(oldBalance, balance);
 
             return true;
         }
