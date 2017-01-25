@@ -6,7 +6,7 @@
 <?import java.net.URL?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" id="AnchorPane" prefHeight="300.0" prefWidth="602.0"
             styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8"
-            fx:controller="bank.server.BalieController">
+            fx:controller="bank.server.BankController">
     <stylesheets>
         <URL value="@balie.css"/>
     </stylesheets>

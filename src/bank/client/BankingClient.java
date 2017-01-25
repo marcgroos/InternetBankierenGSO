@@ -8,6 +8,7 @@ package bank.client;
 
 import bank.interfaces.communication.IBankProvider;
 import bank.interfaces.communication.ISession;
+import bank.server.rmi.ConnConst;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -16,11 +17,9 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.Naming;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,14 +58,21 @@ public class BankingClient extends Application {
 
     protected IBankProvider connectToBalie(String bankName) {
         try {
-            FileInputStream in = new FileInputStream(bankName + ".props");
-            Properties props = new Properties();
-            props.load(in);
-            String rmiBalie = props.getProperty("balie");
-            in.close();
+//            FileInputStream in = new FileInputStream(bankName + ".props");
+//            Properties props = new Properties();
+//            props.load(in);
+//            String rmiBalie = props.getProperty("balie");
+//            in.close();
 
-            IBankProvider balie = (IBankProvider) Naming.lookup("rmi://" + rmiBalie);
-            return balie;
+            System.out.println(bankName);
+
+            String url = "rmi://" + ConnConst.HOST_ADDRESS + ":" + ConnConst.BANK_SERVER_PORT + "/" + bankName;
+
+            System.out.println(url);
+
+            IBankProvider bankProvider = (IBankProvider) Naming.lookup(url);
+
+            return bankProvider;
 
         } catch (Exception exc) {
             exc.printStackTrace();
@@ -83,10 +89,10 @@ public class BankingClient extends Application {
         }
     }
 
-    protected void gotoLogin(IBankProvider balie, String accountNaam) {
+    protected void gotoLogin(IBankProvider bankProvider, String accountNaam) {
         try {
             LoginController login = (LoginController) replaceSceneContent("fxml/Login.fxml");
-            login.setApp(this, balie, accountNaam);
+            login.setApp(this, bankProvider, accountNaam);
         } catch (Exception ex) {
             Logger.getLogger(BankingClient.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -1,8 +1,8 @@
 package bank.server.balie;
 
 import bank.interfaces.communication.IBankProvider;
-import bank.interfaces.communication.ISession;
 import bank.interfaces.communication.ILoginAccount;
+import bank.interfaces.communication.ISession;
 import bank.interfaces.domain.IBank;
 import bank.server.rmi.BalancePublisher;
 
@@ -19,8 +19,6 @@ public class BankProvider extends UnicastRemoteObject implements IBankProvider {
     private HashMap<String, ILoginAccount> loginaccounts;
     //private Collection<ISession> sessions;
     private Random random;
-
-    private BalancePublisher balancePublisher;
 
     public BankProvider(IBank bank) throws RemoteException {
         this.bank = bank;

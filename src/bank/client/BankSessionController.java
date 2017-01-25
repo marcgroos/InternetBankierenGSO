@@ -5,13 +5,13 @@
  */
 package bank.client;
 
-import bank.server.rmi.BalanceListener;
+import bank.domain.Money;
 import bank.exceptions.InvalidSessionException;
 import bank.exceptions.NumberDoesntExistException;
 import bank.interfaces.communication.IBankProvider;
 import bank.interfaces.communication.ISession;
 import bank.interfaces.domain.IBankAccount;
-import bank.domain.Money;
+import bank.server.rmi.BalanceListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

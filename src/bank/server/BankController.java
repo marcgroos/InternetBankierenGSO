@@ -23,7 +23,7 @@ import java.util.ResourceBundle;
  *
  * @author frankcoenen
  */
-public class BalieController implements Initializable {
+public class BankController implements Initializable {
 
     @FXML
     private ComboBox<String> cbSelectBank1;
@@ -31,10 +31,10 @@ public class BalieController implements Initializable {
     @FXML
     private TextArea taMessage;
 
-    private BalieServer application;
+    private BankServer application;
     private String bankNaam;
 
-    public void setApp(BalieServer application) {
+    public void setApp(BankServer application) {
         this.application = application;
     }
 

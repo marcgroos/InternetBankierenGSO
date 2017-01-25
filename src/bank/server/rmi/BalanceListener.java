@@ -3,8 +3,6 @@ package bank.server.rmi;
 import bank.client.BankSessionController;
 import bank.domain.Money;
 import bank.interfaces.domain.IBankAccount;
-import bank.server.rmi.BalancePublisher;
-import bank.server.rmi.ConnectionConstants;
 import fontyspublisher.IRemotePropertyListener;
 import fontyspublisher.IRemotePublisherForListener;
 
@@ -31,7 +29,7 @@ public class BalanceListener extends UnicastRemoteObject implements IRemotePrope
     public void setUpListener() {
         try {
             System.out.println("CLIENT: Trying to locate registry...");
-            registry = LocateRegistry.getRegistry(ConnectionConstants.HOST_ADDRESS, ConnectionConstants.PUBLISHER_PORT);
+            registry = LocateRegistry.getRegistry(ConnConst.HOST_ADDRESS, ConnConst.PUBLISHER_PORT);
             System.out.println("CLIENT: Registry located");
         } catch (RemoteException ex) {
             System.out.println("CLIENT: Cannot locate registry");
@@ -42,8 +40,9 @@ public class BalanceListener extends UnicastRemoteObject implements IRemotePrope
         if (registry != null) {
             try {
                 System.out.println("CLIENT: Trying to subscribe to '" + bankAccount.getNr() + "'...");
-                publisher = (IRemotePublisherForListener) registry.lookup(ConnectionConstants.PUBLISHER_BINDING_NAME);
+                publisher = (IRemotePublisherForListener) registry.lookup(ConnConst.PUBLISHER_BINDING_NAME);
                 publisher.subscribeRemoteListener(this, bankAccount.getNr() + "");
+                System.out.println("CLIENT: Successfully subscribed to '" + bankAccount.getNr() + "'!");
             } catch (RemoteException | NotBoundException ex) {
                 System.out.println("CLIENT: Cannot subscribe to '" + bankAccount.getNr() + "'");
                 System.out.println("CLIENT: RemoteException: " + ex.getMessage());
@@ -56,6 +55,7 @@ public class BalanceListener extends UnicastRemoteObject implements IRemotePrope
     public void propertyChange(PropertyChangeEvent evt) throws RemoteException {
         Money money = (Money) evt.getNewValue();
         bankSessionController.changeBalanceValue(money.getValue());
+        System.out.println("Changed value!");
     }
 
 }

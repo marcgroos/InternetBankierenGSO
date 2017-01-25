@@ -1,14 +1,9 @@
 package bank.domain;
 
 
-import bank.interfaces.domain.IUserAccount;
 import bank.interfaces.domain.IBankAccount;
 import bank.interfaces.domain.IMutateable;
-import bank.server.rmi.BalancePublisher;
-
-import java.rmi.Remote;
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
+import bank.interfaces.domain.IUserAccount;
 
 class BankAccount implements IMutateable {
 
@@ -29,7 +24,7 @@ class BankAccount implements IMutateable {
      * @see banking.persistence.PersistentBank
      */
     BankAccount(int number, IUserAccount klant, String currency) {
-        this(number, klant, new Money(100, currency));
+        this(number, klant, new Money(1000, currency));
     }
 
     /**

@@ -5,11 +5,14 @@
  */
 package bank.server;
 
-import bank.centrale.IBankCentrale;
 import bank.client.BankingClient;
-import bank.interfaces.communication.IBankProvider;
-import bank.server.balie.BankProvider;
 import bank.domain.Bank;
+import bank.interfaces.communication.IBankProvider;
+import bank.interfaces.domain.IBank;
+import bank.interfaces.domain.ICentralBank;
+import bank.server.balie.BankProvider;
+import bank.server.rmi.BalancePublisher;
+import bank.server.rmi.ConnConst;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -18,7 +21,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -27,21 +29,19 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * @author frankcoenen
  */
-public class BalieServer extends Application {
-
-    public static final int RMI_PORT = 1488;
+public class BankServer extends Application {
 
     private final double MINIMUM_WINDOW_WIDTH = 600.0;
     private final double MINIMUM_WINDOW_HEIGHT = 200.0;
     private Stage stage;
-    private String nameBank;
+
+    public static BalancePublisher balancePublisher;
 
     /**
      * @param args the command line arguments
@@ -61,30 +61,26 @@ public class BalieServer extends Application {
             gotoBankSelect();
 
             primaryStage.show();
+
+            // Create balance publisher
+            balancePublisher = new BalancePublisher();
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    public boolean startBalie(String nameBank) {
-
-        FileOutputStream out = null;
+    public boolean startBalie(String bankName) {
         try {
-            this.nameBank = nameBank;
-            String address = java.net.InetAddress.getLocalHost().getHostAddress();
-            int port = 1099;
+            try {
+                ICentralBank centralBank = getRemoteCentralBank();
+                centralBank.registerBank(bankName, new Bank(centralBank, bankName));
+                IBank bank = new Bank(getRemoteCentralBank(), bankName);
+                IBankProvider bankProvider = new BankProvider(bank);
 
-            Properties props = new Properties();
-            String rmiBalie = address + ":" + port + "/" + nameBank;
-            props.setProperty("balie", rmiBalie);
+                Registry registry = LocateRegistry.createRegistry(ConnConst.BANK_SERVER_PORT);
 
-            out = new FileOutputStream(nameBank + ".props");
-            props.store(out, null);
-            out.close();
-
-            try{
-                Registry registry = LocateRegistry.getRegistry(RMI_PORT);
-                registry.rebind(nameBank, new BankProvider(new Bank(getBankCentrale(), nameBank)));
+                registry.rebind(bankName, bankProvider);
 
             } catch (NotBoundException e) {
                 e.printStackTrace();
@@ -93,24 +89,20 @@ public class BalieServer extends Application {
             return true;
 
         } catch (IOException ex) {
-            Logger.getLogger(BalieServer.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                out.close();
-            } catch (IOException ex) {
-                Logger.getLogger(BalieServer.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            Logger.getLogger(BankServer.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         return false;
     }
 
-    private IBankCentrale getBankCentrale() throws RemoteException, NotBoundException, MalformedURLException{
-        return (IBankCentrale)  Naming.lookup("rmi://localhost:12345/bankcentrale");
+    private ICentralBank getRemoteCentralBank() throws RemoteException, NotBoundException, MalformedURLException {
+        String url = "rmi://" + ConnConst.HOST_ADDRESS + ":" + ConnConst.CENTRAL_SERVER_PORT + "/" + ConnConst.CENTRAL_BANK_BINDING_NAME;
+        return (ICentralBank) Naming.lookup(url);
     }
 
     public void gotoBankSelect() {
         try {
-            BalieController bankSelect = (BalieController) replaceSceneContent("balie/fxml/BankProvider.fxml");
+            BankController bankSelect = (BankController) replaceSceneContent("balie/fxml/BankProvider.fxml");
             bankSelect.setApp(this);
         } catch (Exception ex) {
             Logger.getLogger(BankingClient.class.getName()).log(Level.SEVERE, null, ex);
@@ -119,9 +111,9 @@ public class BalieServer extends Application {
 
     private Initializable replaceSceneContent(String fxml) throws Exception {
         FXMLLoader loader = new FXMLLoader();
-        InputStream in = BalieServer.class.getResourceAsStream(fxml);
+        InputStream in = BankServer.class.getResourceAsStream(fxml);
         loader.setBuilderFactory(new JavaFXBuilderFactory());
-        loader.setLocation(BalieServer.class.getResource(fxml));
+        loader.setLocation(BankServer.class.getResource(fxml));
         AnchorPane page;
         try {
             page = (AnchorPane) loader.load(in);
@@ -133,4 +125,5 @@ public class BalieServer extends Application {
         stage.sizeToScene();
         return (Initializable) loader.getController();
     }
+
 }

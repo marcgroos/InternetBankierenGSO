@@ -1,7 +1,7 @@
 package bank.interfaces.domain;
 
-import bank.exceptions.NumberDoesntExistException;
 import bank.domain.Money;
+import bank.exceptions.NumberDoesntExistException;
 
 import java.rmi.RemoteException;
 

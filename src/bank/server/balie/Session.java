@@ -1,11 +1,11 @@
 package bank.server.balie;
 
+import bank.domain.Money;
 import bank.exceptions.InvalidSessionException;
 import bank.exceptions.NumberDoesntExistException;
 import bank.interfaces.communication.ISession;
 import bank.interfaces.domain.IBank;
 import bank.interfaces.domain.IBankAccount;
-import bank.domain.Money;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;

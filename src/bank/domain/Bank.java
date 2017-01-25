@@ -1,14 +1,11 @@
 package bank.domain;
 
 
-import bank.centrale.IBankCentrale;
-import bank.centrale.IBankTransfer;
 import bank.exceptions.NumberDoesntExistException;
-import bank.interfaces.domain.IBank;
-import bank.interfaces.domain.IBankAccount;
-import bank.interfaces.domain.IMutateable;
-import bank.interfaces.domain.IUserAccount;
-import bank.server.rmi.BalancePublisher;
+import bank.interfaces.communication.IBankTransfer;
+import bank.interfaces.domain.*;
+import bank.server.BankServer;
+import bank.server.CentralBankServer;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -17,7 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Bank extends BalancePublisher implements IBank, IBankTransfer, AutoCloseable{
+public class Bank implements IBank, IBankTransfer, AutoCloseable {
 
     /**
      *
@@ -27,38 +24,28 @@ public class Bank extends BalancePublisher implements IBank, IBankTransfer, Auto
     private Collection<IUserAccount> clients;
     private int nieuwReknr;
     private String name;
-    private IBankCentrale centraleBank;
+    private ICentralBank centralBank;
 
-    public Bank(IBankCentrale bankCentrale, String name) throws RemoteException {
+    public Bank(ICentralBank bankCentrale, String name) throws RemoteException {
         accounts = new HashMap<Integer, IMutateable>();
         clients = new ArrayList<IUserAccount>();
         nieuwReknr = 100000000;
         this.name = name;
-        this.centraleBank = bankCentrale;
+        this.centralBank = bankCentrale;
 
-        centraleBank.registerBank(name, this);
-
-/*        try {
-            this.balancePublisher = new BalancePublisher();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }*/
+        centralBank.registerBank(name, this);
     }
 
     public int openBankAccount(String name, String city) throws RemoteException {
         if (name.equals("") || city.equals(""))
             return -1;
 
-        int accountNr = centraleBank.getUniqueRekNr(this.name);
+        int accountNr = centralBank.getUniqueRekNr(this.name);
         IMutateable account = new BankAccount(accountNr, getUserAccount(name, city), Money.EURO);
         accounts.put(accountNr, account);
 
         // Register property
-        try {
-            registerProperty(accountNr + "");
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        BankServer.balancePublisher.registerProperty(account);
 
         return accountNr;
 
@@ -103,20 +90,20 @@ public class Bank extends BalancePublisher implements IBank, IBankTransfer, Auto
             throw new NumberDoesntExistException("account " + destination
                     + " unknown at " + name);
 
-        if(source_account != null && dest_account != null){
+        if (source_account != null && dest_account != null) {
             return internalTransfer(money, source_account, dest_account);
         }
 
-        try{
-            return centraleBank.transfer(source_account.getNr(), dest_account.getNr(), money);
+        try {
+            return centralBank.transfer(source_account.getNr(), dest_account.getNr(), money);
         } catch (RemoteException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    private boolean internalTransfer(Money money, IMutateable source_account, IMutateable dest_account){
-        synchronized (accounts){
+    private boolean internalTransfer(Money money, IMutateable source_account, IMutateable dest_account) {
+        synchronized (accounts) {
 
             Money negative = Money.difference(new Money(0, money.getCurrency()),
                     money);
@@ -145,7 +132,7 @@ public class Bank extends BalancePublisher implements IBank, IBankTransfer, Auto
     public boolean mutate(int nr, Money money) throws RemoteException {
         IMutateable account = (IMutateable) getBankAccount(nr);
         boolean succes = account.mutate(money);
-        if(succes) informBalance(account);
+        if (succes) BankServer.balancePublisher.informBalance(account);
         return succes;
     }
 

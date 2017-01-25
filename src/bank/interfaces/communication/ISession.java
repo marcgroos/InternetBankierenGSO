@@ -1,9 +1,9 @@
 package bank.interfaces.communication;
 
+import bank.domain.Money;
 import bank.exceptions.InvalidSessionException;
 import bank.exceptions.NumberDoesntExistException;
 import bank.interfaces.domain.IBankAccount;
-import bank.domain.Money;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
