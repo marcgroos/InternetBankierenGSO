@@ -15,7 +15,7 @@ class BankAccount implements IMutateable {
     private int nr;
     private IUserAccount owner;
     private Money balance;
-//    private BalancePublisher publisher;
+    private BalancePublisher publisher;
 
     /**
      * creatie van een bankrekening met balance van 0.0<br>
@@ -47,11 +47,11 @@ class BankAccount implements IMutateable {
         this.owner = klant;
         this.balance = balance;
 
-//        try {
-//            this.publisher = new BalancePublisher(this.nr);
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            this.publisher = new BalancePublisher(this.nr);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean equals(Object obj) {
@@ -87,11 +87,7 @@ class BankAccount implements IMutateable {
             Money oldBalance = new Money(balance.getCents(), Money.EURO);
             balance = Money.sum(balance, bedrag);
 
-//            try {
-//                publisher.informBalance(oldBalance, balance);
-//            } catch (RemoteException e) {
-//                e.printStackTrace();
-//            }
+            publisher.informBalance(oldBalance, balance);
 
             return true;
         }
