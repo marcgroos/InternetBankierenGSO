@@ -5,6 +5,7 @@
  */
 package bank.server;
 
+import bank.centrale.IBankCentrale;
 import bank.client.BankingClient;
 import bank.interfaces.communication.IBankProvider;
 import bank.server.balie.BankProvider;
@@ -20,7 +21,12 @@ import javafx.stage.Stage;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,7 +36,7 @@ import java.util.logging.Logger;
  */
 public class BalieServer extends Application {
 
-    public static final int RMI_PORT = 1069;
+    public static final int RMI_PORT = 1488;
 
     private final double MINIMUM_WINDOW_WIDTH = 600.0;
     private final double MINIMUM_WINDOW_HEIGHT = 200.0;
@@ -67,15 +73,22 @@ public class BalieServer extends Application {
             this.nameBank = nameBank;
             String address = java.net.InetAddress.getLocalHost().getHostAddress();
             int port = 1099;
+
             Properties props = new Properties();
             String rmiBalie = address + ":" + port + "/" + nameBank;
             props.setProperty("balie", rmiBalie);
+
             out = new FileOutputStream(nameBank + ".props");
             props.store(out, null);
             out.close();
-            java.rmi.registry.LocateRegistry.createRegistry(port);
-            IBankProvider balie = new BankProvider(new Bank(nameBank));
-            Naming.rebind(nameBank, balie);
+
+            try{
+                Registry registry = LocateRegistry.getRegistry(RMI_PORT);
+                registry.rebind(nameBank, new BankProvider(new Bank(getBankCentrale(), nameBank)));
+
+            } catch (NotBoundException e) {
+                e.printStackTrace();
+            }
 
             return true;
 
@@ -89,6 +102,10 @@ public class BalieServer extends Application {
             }
         }
         return false;
+    }
+
+    private IBankCentrale getBankCentrale() throws RemoteException, NotBoundException, MalformedURLException{
+        return (IBankCentrale)  Naming.lookup("rmi://localhost:12345/bankcentrale");
     }
 
     public void gotoBankSelect() {

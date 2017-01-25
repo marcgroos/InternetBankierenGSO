@@ -4,6 +4,7 @@ import bank.interfaces.communication.IBankProvider;
 import bank.interfaces.communication.ISession;
 import bank.interfaces.communication.ILoginAccount;
 import bank.interfaces.domain.IBank;
+import bank.server.rmi.BalancePublisher;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -18,6 +19,8 @@ public class BankProvider extends UnicastRemoteObject implements IBankProvider {
     private HashMap<String, ILoginAccount> loginaccounts;
     //private Collection<ISession> sessions;
     private Random random;
+
+    private BalancePublisher balancePublisher;
 
     public BankProvider(IBank bank) throws RemoteException {
         this.bank = bank;
@@ -35,7 +38,12 @@ public class BankProvider extends UnicastRemoteObject implements IBankProvider {
         if (wachtwoord.length() < 4 || wachtwoord.length() > 8)
             return null;
 
-        int nr = bank.openBankAccount(naam, plaats);
+        int nr = 0;
+        try {
+            nr = bank.openBankAccount(naam, plaats);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         if (nr == -1)
             return null;
 

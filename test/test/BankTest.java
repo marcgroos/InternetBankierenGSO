@@ -1,5 +1,6 @@
 package test;
 
+import bank.centrale.BankCentrale;
 import bank.exceptions.NumberDoesntExistException;
 import bank.interfaces.domain.IBank;
 import bank.domain.Bank;
@@ -20,8 +21,8 @@ public class BankTest {
 
     @Before
     public void setUp() throws Exception {
-        bank1 = new Bank("Rabobank");
-        bank2 = new Bank("ING-Bank");
+        bank1 = new Bank(new BankCentrale(), "Rabobank");
+        bank2 = new Bank(new BankCentrale(), "ING-Bank");
     }
 
     /**

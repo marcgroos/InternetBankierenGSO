@@ -1,5 +1,6 @@
 package test;
 
+import bank.centrale.BankCentrale;
 import bank.interfaces.communication.ISession;
 import bank.server.balie.BankProvider;
 import bank.domain.Bank;
@@ -17,7 +18,7 @@ public class BankProviderTest {
 
     @Before
     public void setUp() throws Exception {
-        balie = new BankProvider(new Bank("Rabobank"));
+        balie = new BankProvider(new Bank(new BankCentrale(), "Rabobank"));
     }
 
     /**

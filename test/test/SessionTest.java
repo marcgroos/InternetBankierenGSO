@@ -1,5 +1,6 @@
 package test;
 
+import bank.centrale.BankCentrale;
 import bank.interfaces.communication.ISession;
 import bank.interfaces.domain.IBank;
 import bank.server.balie.Session;
@@ -21,7 +22,7 @@ public class SessionTest {
 
     @Before
     public void setUp() throws Exception {
-        bank1 = new Bank("Rabobank");
+        bank1 = new Bank(new BankCentrale(), "Rabobank");
         rekNr1 = bank1.openBankAccount("Hans", "Maat");
         rekNr2 = bank1.openBankAccount("Piet", "Werk");
 

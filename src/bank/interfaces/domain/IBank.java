@@ -3,6 +3,8 @@ package bank.interfaces.domain;
 import bank.exceptions.NumberDoesntExistException;
 import bank.domain.Money;
 
+import java.rmi.RemoteException;
+
 /**
  * @author 871059
  */
@@ -18,7 +20,7 @@ public interface IBank {
      * @return -1 zodra naam of plaats een lege string en anders het nummer van de
      * gecreeerde bankrekening
      */
-    int openBankAccount(String naam, String plaats);
+    int openBankAccount(String naam, String plaats) throws RemoteException;
 
     /**
      * er wordt bedrag overgemaakt van de bankrekening met nummer bron naar de

@@ -1,6 +1,7 @@
 package bank.server.rmi;
 
 import bank.interfaces.domain.IBankAccount;
+import fontyspublisher.IRemotePropertyListener;
 import fontyspublisher.RemotePublisher;
 
 import java.io.Serializable;
@@ -11,6 +12,8 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observer;
+import java.util.Set;
 
 /**
  * Created by guill on 4-10-2016.

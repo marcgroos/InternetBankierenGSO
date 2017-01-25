@@ -1,6 +1,8 @@
 package bank.domain;
 
 
+import bank.centrale.IBankCentrale;
+import bank.centrale.IBankTransfer;
 import bank.exceptions.NumberDoesntExistException;
 import bank.interfaces.domain.IBank;
 import bank.interfaces.domain.IBankAccount;
@@ -9,12 +11,13 @@ import bank.interfaces.domain.IUserAccount;
 import bank.server.rmi.BalancePublisher;
 
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Bank implements IBank {
+public class Bank extends BalancePublisher implements IBank, IBankTransfer, AutoCloseable{
 
     /**
      *
@@ -24,32 +27,48 @@ public class Bank implements IBank {
     private Collection<IUserAccount> clients;
     private int nieuwReknr;
     private String name;
-    private BalancePublisher balancePublisher = null;
+    private IBankCentrale centraleBank;
 
-    public Bank(String name) {
+    public Bank(IBankCentrale bankCentrale, String name) throws RemoteException {
         accounts = new HashMap<Integer, IMutateable>();
         clients = new ArrayList<IUserAccount>();
         nieuwReknr = 100000000;
         this.name = name;
+        this.centraleBank = bankCentrale;
 
-        try {
+        centraleBank.registerBank(name, this);
+
+/*        try {
             this.balancePublisher = new BalancePublisher();
         } catch (RemoteException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
-    public int openBankAccount(String name, String city) {
+    public int openBankAccount(String name, String city) throws RemoteException {
         if (name.equals("") || city.equals(""))
             return -1;
 
-        IUserAccount klant = getUserAccount(name, city);
+        int accountNr = centraleBank.getUniqueRekNr(this.name);
+        IMutateable account = new BankAccount(accountNr, getUserAccount(name, city), Money.EURO);
+        accounts.put(accountNr, account);
+
+        // Register property
+        try {
+            registerProperty(accountNr + "");
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        return accountNr;
+
+/*        IUserAccount klant = getUserAccount(name, city);
         IMutateable account = new BankAccount(nieuwReknr, klant, Money.EURO);
         accounts.put(nieuwReknr, account);
         balancePublisher.registerProperty(account); // Add to balance publisher
 
         nieuwReknr++;
-        return nieuwReknr - 1;
+        return nieuwReknr - 1;*/
     }
 
     private IUserAccount getUserAccount(String name, String city) {
@@ -66,7 +85,7 @@ public class Bank implements IBank {
         return accounts.get(nr);
     }
 
-    public synchronized boolean transferMoney(int source, int destination, Money money)
+    public boolean transferMoney(int source, int destination, Money money)
             throws NumberDoesntExistException {
         if (source == destination)
             throw new RuntimeException(
@@ -79,25 +98,42 @@ public class Bank implements IBank {
             throw new NumberDoesntExistException("account " + source
                     + " unknown at " + name);
 
-        Money negative = Money.difference(new Money(0, money.getCurrency()),
-                money);
-        boolean success = source_account.mutate(negative);
-        if (!success)
-            return false;
-
         IMutateable dest_account = (IMutateable) getBankAccount(destination);
         if (dest_account == null)
             throw new NumberDoesntExistException("account " + destination
                     + " unknown at " + name);
-        success = dest_account.mutate(money);
 
-        if (!success) {
-            source_account.mutate(money);
-        } else {
-            this.balancePublisher.informBalance(source_account);
-            this.balancePublisher.informBalance(dest_account);
+        if(source_account != null && dest_account != null){
+            return internalTransfer(money, source_account, dest_account);
         }
-        return success;
+
+        try{
+            return centraleBank.transfer(source_account.getNr(), dest_account.getNr(), money);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private boolean internalTransfer(Money money, IMutateable source_account, IMutateable dest_account){
+        synchronized (accounts){
+
+            Money negative = Money.difference(new Money(0, money.getCurrency()),
+                    money);
+
+            boolean success = source_account.mutate(negative);
+            if (!success) return false;
+
+            success = dest_account.mutate(money);
+
+            if (!success) {
+                source_account.mutate(money);
+            } else {
+//                this.balancePublisher.informBalance(source_account);
+//                this.balancePublisher.informBalance(dest_account);
+            }
+            return success;
+        }
     }
 
     @Override
@@ -105,4 +141,16 @@ public class Bank implements IBank {
         return name;
     }
 
+    @Override
+    public boolean mutate(int nr, Money money) throws RemoteException {
+        IMutateable account = (IMutateable) getBankAccount(nr);
+        boolean succes = account.mutate(money);
+        if(succes) informBalance(account);
+        return succes;
+    }
+
+    @Override
+    public void close() throws Exception {
+        UnicastRemoteObject.unexportObject(this, true);
+    }
 }
