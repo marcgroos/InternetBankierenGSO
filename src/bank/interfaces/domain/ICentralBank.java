@@ -19,6 +19,4 @@ public interface ICentralBank extends Remote {
     void registerBank(String bankName, IBankTransfer bank) throws RemoteException;
 
     boolean transfer(String from, String to, Money amount) throws RemoteException, NumberDoesntExistException;
-
-    Map<String, IBankTransfer> getBanken();
 }

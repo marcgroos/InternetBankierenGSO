@@ -7,6 +7,7 @@ import bank.interfaces.domain.*;
 import bank.server.BankServer;
 import bank.server.CentralBankServer;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Bank implements IBank, IBankTransfer, AutoCloseable {
+public class Bank implements Serializable, IBank, IBankTransfer, AutoCloseable {
 
     /**
      *
@@ -22,19 +23,16 @@ public class Bank implements IBank, IBankTransfer, AutoCloseable {
     private static final long serialVersionUID = -8728841131739353765L;
     private Map<String, IMutateable> accounts;
     private Collection<IUserAccount> clients;
-    private String nieuwReknr;
-    private String prefix;
     private String name;
     private ICentralBank centralBank;
 
     public Bank(ICentralBank bankCentrale, String name) throws RemoteException {
-        accounts = new HashMap<String, IMutateable>();
-        clients = new ArrayList<IUserAccount>();
-        nieuwReknr = 100000000 + "";
+        UnicastRemoteObject.exportObject(this, 0);
+
+        this.accounts = new HashMap<>();
+        this.clients = new ArrayList<>();
         this.name = name;
         this.centralBank = bankCentrale;
-        this.prefix = name.substring(0, 2).toUpperCase();
-
     }
 
     public String openBankAccount(String name, String city) throws RemoteException {

@@ -8,13 +8,15 @@ import bank.server.rmi.BalancePublisher;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Created by guill on 25-1-2017.
  */
-public class CentralBank implements Serializable, ICentralBank {
+public class CentralBank implements Serializable, ICentralBank, AutoCloseable {
 
     private Map<String, String> rekeningen = new HashMap<>();
     private Map<String, IBankTransfer> banken = new HashMap<>();
@@ -22,7 +24,7 @@ public class CentralBank implements Serializable, ICentralBank {
     private String prefix;
 
     public CentralBank() throws RemoteException {
-
+        UnicastRemoteObject.exportObject(this, 0);
     }
 
     public Map<String, IBankTransfer> getBanken() {
@@ -34,27 +36,18 @@ public class CentralBank implements Serializable, ICentralBank {
 
         prefix = bankName.substring(0, 3).toUpperCase();
 
-
         synchronized (rekeningen) {
 
             String out = prefix + "-" + (rekeningen.size() + 1);
             rekeningen.put(out, bankName);
+
             return out;
-//            for (int i = 1; ; i++) {
-//                if (!rekeningen.containsKey(prefix + i)) {
-//
-//                    String out = prefix + "-" + i;
-//                    rekeningen.put(out, bankName);
-//                    return out;
-//                }
-//            }
         }
     }
 
     @Override
     public void registerBank(String bankName, IBankTransfer bank) throws RemoteException {
         banken.put(bankName, bank);
-
     }
 
     @Override
@@ -79,5 +72,10 @@ public class CentralBank implements Serializable, ICentralBank {
         String bankName = rekeningen.get(rekNr);
         if (bankName == null) throw new NumberDoesntExistException("account" + rekNr + "is unknown");
         return banken.get(bankName);
+    }
+
+    @Override
+    public void close() throws Exception {
+        UnicastRemoteObject.unexportObject(this, true);
     }
 }

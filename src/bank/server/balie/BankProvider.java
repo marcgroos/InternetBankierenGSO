@@ -75,6 +75,4 @@ public class BankProvider extends UnicastRemoteObject implements IBankProvider {
         }
         return s.toString();
     }
-
-
 }
